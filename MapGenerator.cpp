@@ -20,10 +20,10 @@ struct BSPNode {
 class Map {
     friend class Game;
 private:
-    const int MAX_MAP_WIDTH = 60;
+    const int MAX_MAP_WIDTH = 70;
     const int MAX_MAP_HEIGHT = 20;
-    const int minRoomSize = 9;
-    const int maxRoomSize = 12;
+    const int minRoomSize = 8;
+    const int maxRoomSize = 13;
     // { 1:{enemies:{ {1,2},{2,3} },width_and_height:{{20,30}},chests:{{20,30},{30,40},exits:{1,2}} 2:{} 3:{}}
 
     void connectRooms(BSPNode* node, std::vector<std::vector<char>>& map) {

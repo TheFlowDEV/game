@@ -8,7 +8,7 @@
 #include <map>
 #include "MapGenerator.cpp"
 
-#define DEBUG true
+#define DEBUG false
 using namespace std;
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
