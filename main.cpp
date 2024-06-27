@@ -4,6 +4,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <ctime>
+#include <map>
+#include "MapGenerator.cpp"
+
 #define DEBUG true
 using namespace std;
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -20,7 +24,6 @@ void SetXY(short X, short Y) {
 class Game
 {
 private:
-	bool room_buffer[20][20];
 	void ShowRecords() {
 		ifstream file("records.txt");
 		int first_place=0, second_place=0, third_place=0;
@@ -51,7 +54,8 @@ private:
 
 	}
 	void draw_game() {
-		if (DEBUG);
+	 long long seed = (clock() * rand()) + (clock()*(rand()+clock()));
+
 	}
 	
 	void redraw_start_screen(int choose) {
@@ -149,15 +153,28 @@ public:
 		setlocale(LC_ALL, "Russian");
 		// Титульник(введение,название игры)
 		SetConsoleTitle(TEXT("Живые клетки"));
-		cout << start_screen;
-		Sleep(1000);
-		clear();
-		// МЕНЮ
-		draw_start_screen();
-		clear();
-		// основная игра
-		draw_game();
+		if (!DEBUG) {
+			cout << start_screen;
+			Sleep(1000);
+			clear();
+			// МЕНЮ
+			draw_start_screen();
+			clear();
+			// основная игра
+			draw_game();
+		}
+		else {
+			Map map = Map();
+			map.generate();
+			for (int i = 0; i < map.MAX_MAP_WIDTH; i++) {
+				for (int j = 0; j < map.MAX_MAP_HEIGHT; j++) {
+					SetXY(i, j);
+					cout << map.generated_map[j][i];
 
+
+				}
+			}
+		}
 
 
 
