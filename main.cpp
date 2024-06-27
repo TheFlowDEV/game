@@ -2,12 +2,13 @@
 #include <conio.h>
 #include <string>
 #include <iostream>
-
+#include <fstream>
+#include <vector>
+#define DEBUG true
 using namespace std;
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
-
-string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                        ТЕТРИС                             *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
+string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void clear() {
 	system("cls");
 }
@@ -15,12 +16,44 @@ void SetXY(short X, short Y) {
 	COORD coord = { X, Y };
 	SetConsoleCursorPosition(hout, coord);
 }
-// Функция меняет цвет фона выбора на белый
-
 
 class Game
 {
 private:
+	bool room_buffer[20][20];
+	void ShowRecords() {
+		ifstream file("records.txt");
+		int first_place=0, second_place=0, third_place=0;
+		if (file.is_open()) {
+			string line;
+			if (getline(file, line)) first_place = stoi(line);
+			if (getline(file, line)) second_place = stoi(line);
+			if (getline(file, line)) third_place = stoi(line);
+		}
+		SetXY(0, 0);
+		cout << "Рекорды";
+		SetXY(0, 1);
+		cout << "1."<<first_place;
+		SetXY(0, 2);
+		cout << "2."<<second_place;
+		SetXY(0, 3);
+		cout << "3."<<third_place;
+		SetXY(0, 5);
+		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+		cout << "Выход";
+		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+		while (true) {
+			if (_kbhit()) {
+				int key = _getch();
+				if (key == 13) break;
+			}
+		}
+
+	}
+	void draw_game() {
+		if (DEBUG);
+	}
+	
 	void redraw_start_screen(int choose) {
 		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		clear();
@@ -56,28 +89,20 @@ private:
 			break;
 		}
 	}
-public:
-	void Initialize()
-	{
-		setlocale(LC_ALL, "Russian");
-		SetConsoleTitle(TEXT("TETRIS: The Game"));
-		cout << start_screen;
-		Sleep(1000);
-
-		clear();
-		// МЕНЮ
-		COORD coord;
+	
+	void draw_start_screen() {
 		SetXY(0, 0);
 		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
 		cout << "1.СТАРТ";
-		SetConsoleTextAttribute(hout, (WORD)(0<<4|15));
+		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		SetXY(0, 1);
 		cout << "2.ТАБЛИЦА РЕКОРДОВ";
 		SetXY(0, 2);
 		cout << "3.ВЫХОД";
 		int choose = 0;
 		int key;
-		while (true)
+		bool StartShouldShow = true;
+		while (StartShouldShow)
 		{
 			if (_kbhit()) {
 				key = _getch();
@@ -94,13 +119,49 @@ public:
 						redraw_start_screen(choose);
 					}
 				}
-				
+				else if (key == 13) {
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+
+					switch (choose) {
+					case 0:
+						StartShouldShow = false;
+						clear();
+						break;
+					case 1:
+						clear();
+						ShowRecords();
+						redraw_start_screen(choose);
+						break;
+					case 2:
+						clear();
+						exit(0);
+						break;
+					}
+				}
+
 
 			}
-
-
-
 		}
+	}
+public:
+	void Initialize()
+	{
+		setlocale(LC_ALL, "Russian");
+		// Титульник(введение,название игры)
+		SetConsoleTitle(TEXT("Живые клетки"));
+		cout << start_screen;
+		Sleep(1000);
+		clear();
+		// МЕНЮ
+		draw_start_screen();
+		clear();
+		// основная игра
+		draw_game();
+
+
+
+
+
 	}
 
 };
