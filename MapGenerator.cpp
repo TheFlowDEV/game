@@ -1,11 +1,11 @@
-#include <vector>
+﻿#include <vector>
 #include <map>
 #include <string>
 #include <iostream>
 #include <ctime>
 
-// ��� �������� ������ � ������� CHATGPT
-// �� ��������!!!
+// КОД ЧАСТИЧНО СДЕЛАН С ПОМОЩЬЮ CHATGPT
+// НЕ ДОВЕРЯТЬ!!!
 
 using namespace std;
 struct BSPNode {
@@ -16,16 +16,103 @@ struct BSPNode {
 
 	BSPNode(int x, int y, int width, int height)
 		: x(x), y(y), width(width), height(height), left(nullptr), right(nullptr), isLeaf(true) {}
+
 };
+const int minRoomSize = 13;
+const int maxRoomSize = 17;
+const int MAX_EXIT_NUMBER = 1;
+const int MAX_CHEST_NUMBER = 4;
+const short MAX_ENEMY_NUMBER = 10;
+class Enemy {
+private:
+    pair<int, int> coords;
+    vector<vector<char>>* map;
+    BSPNode* room;
+public:
+    Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room) {
+        this->coords = coords;
+        this->map = map;
+        this->room = room;
+    }
+    void Move(pair<int, int> player_coords) {
+        // нужно проверить видимость игрока в пределах комнаты
+        if ((player_coords.first > room->x + 1) && (player_coords.first < room->x + room->width - 1) && (player_coords.second > room->y - 1) && (player_coords.second < room->y + room->height + 1))
+        {
+            //должны выстроить траекторию к нему и идти ПО ОДНОЙ КЛЕТКЕ
+            // НЕЛЬЗЯ ИДТИ ЕСЛИ ВПЕРЕДИ ОБЪЕКТ
+        }
+        // иначе просто в рандомную позицию идти(В ПРЕДЕЛАХ КОМНАТЫ)
+        else {
+
+        }
+
+
+    }
+    pair<int, int> get_coords() { return this->coords; }
+};
+
+class Room {
+private:
+    vector<Enemy> enemies;
+    pair<int, int> chest;
+    pair<int, int> exit;
+    BSPNode* node;
+public:
+    Room(BSPNode* node) {
+        this->node = node;
+    }
+    void generate(bool exit, bool chest, bool enemy,vector<vector<char>> *map)
+    {
+        if (exit) {
+            this->exit.first = rand() % (node->width-1 ) + node->x+1;
+            this->exit.second = rand() % (node->height-1) + node->y + 1;
+           
+        }
+        
+        if (chest) {
+            this->chest.first = rand() % (node->width - 1) + node->x + 1;
+            this->chest.second = rand() % (node->height - 1) + node->y + 1;
+            
+        }
+        
+        if (enemy) {
+            pair<int, int> enemy_coords;
+            enemy_coords.first = rand() % (node->width - 1) + node->x + 1;
+            enemy_coords.second = rand() % (node->height - 1) + node->y + 1;
+            Enemy enemy = Enemy(enemy_coords, map, this->node);
+            enemies.push_back(enemy);
+            if (rand() % 4 == 3) {
+                pair<int, int> enemy2_coords;
+                enemy2_coords.first = rand() % (node->width - 1) + node->x + 1;
+                enemy2_coords.second = rand() % (node->height - 1) + node->y + 1;
+                
+
+                if (enemy_coords != enemy2_coords) {
+                    Enemy enemy2 = Enemy(enemy2_coords, map, this->node);
+                    enemies.push_back(enemy2);
+                }
+            }
+        }
+        
+
+    }
+    vector<Enemy> get_enemies() { return this->enemies; }
+    pair<int, int> get_chest() { return this->chest; }
+    pair<int, int> get_exit() { return this->exit; }
+    BSPNode* get_node() { return this->node; }
+};
+
 class Map {
     friend class Game;
 private:
-    const int MAX_MAP_WIDTH = 70;
-    const int MAX_MAP_HEIGHT = 20;
-    const int minRoomSize = 8;
-    const int maxRoomSize = 13;
+    const int MAX_MAP_WIDTH = 100;
+    const int MAX_MAP_HEIGHT = 28;
+    float chest_veroyatnost = 5.25,enemy_veroyatnost=1.25,exit_veroyatnost=1;
+    vector<Room> rooms;
     // { 1:{enemies:{ {1,2},{2,3} },width_and_height:{{20,30}},chests:{{20,30},{30,40},exits:{1,2}} 2:{} 3:{}}
-
+    short exits_number = 0;
+    short chests_number = 0;
+    short enemies_number = 0;
     void connectRooms(BSPNode* node, std::vector<std::vector<char>>& map) {
         if (!node->isLeaf) {
             if (node->left) connectRooms(node->left, map);
@@ -61,9 +148,7 @@ private:
                         
                     }
                     else {
-                        if (y == 19) {
-                            cout << x << y <<" "<< node->width << node->height<<endl;
-                        }
+                    
                         map[y][x] = '.';
                     }
                 }
@@ -140,11 +225,54 @@ private:
             if ((roomHeight + roomY) > MAX_MAP_HEIGHT) node->height = MAX_MAP_HEIGHT-roomY-1;
             else if ((roomHeight + roomY) == MAX_MAP_HEIGHT-1 || (roomHeight + roomY) == MAX_MAP_HEIGHT)  node->height = roomHeight - 1;
             else node->height = roomHeight;
+            Room room = Room(node);
+            rooms.push_back(room);
         }
         else {
             if (node->left) createRooms(node->left, minRoomSize, maxRoomSize);
             if (node->right) createRooms(node->right, minRoomSize, maxRoomSize);
         }
+    }
+    void CreateRoomContents(vector<vector<char>>& map) {
+        bool first_room = true;
+        for (auto room : rooms) {
+            if (!first_room) {
+                bool chest=false, enemy=false, exit=false;
+                if (this->enemies_number < MAX_ENEMY_NUMBER) {
+                    if ((rand() % static_cast<int>((enemy_veroyatnost * 2))) == 0) { enemy = true; this->enemies_number++; }
+                }
+                if (this->chests_number < MAX_CHEST_NUMBER) {
+                    if ((rand() % static_cast<int>((chest_veroyatnost * 2))) == 0) {chest = true; this->chests_number++;}
+                }
+                if (this->exits_number < MAX_EXIT_NUMBER) {
+                    if ((rand() % static_cast<int>((exit_veroyatnost * 2))) == 0) { exit = true; this->exits_number++; }
+                }
+                vector<vector<char>>* map_ptr = &generated_map;
+                room.generate(exit, chest, enemy,map_ptr);
+                pair<int, int> exit_coords = room.get_exit();
+                pair<int, int> chest_coords = room.get_chest();
+                vector<Enemy> enemies = room.get_enemies();
+                BSPNode* node = room.get_node();
+                
+
+                if (exit_coords.first!=0 && exit_coords.second!=0) map[exit_coords.second][exit_coords.first] = 'R';
+                if (chest_coords.first!=0 && chest_coords.second!=0) map[chest_coords.second][chest_coords.first] = '$';
+                for (auto& enemy : enemies) {
+                    pair<int, int> enemy_coord = enemy.get_coords();
+                    if (enemy_coord.first != 0 && enemy_coord.second != 0) {
+                        map[enemy_coord.second][enemy_coord.first] = 'E';
+                        
+                    }
+                }
+
+
+            }
+            else {
+                first_room = false;
+            }
+
+        }
+        
     }
 public:
     vector<vector<char>> generated_map;
@@ -156,6 +284,7 @@ public:
         createRooms(root, minRoomSize, maxRoomSize);
         drawRooms(root, map);
         connectRooms(root, map);
+        CreateRoomContents(map);
         generated_map = map;
 
 
@@ -164,3 +293,5 @@ public:
 
 
     };
+    
+    

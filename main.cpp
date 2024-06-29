@@ -8,7 +8,7 @@
 #include <map>
 #include "MapGenerator.cpp"
 
-#define DEBUG false
+#define DEBUG true
 using namespace std;
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
@@ -150,6 +150,7 @@ private:
 public:
 	void Initialize()
 	{
+		system("chcp 65001 >> null");
 		setlocale(LC_ALL, "Russian");
 		// Титульник(введение,название игры)
 		SetConsoleTitle(TEXT("Живые клетки"));
@@ -170,10 +171,12 @@ public:
 				for (int j = 0; j < map.MAX_MAP_HEIGHT; j++) {
 					SetXY(i, j);
 					cout << map.generated_map[j][i];
+					
 
 
 				}
 			}
+			
 		}
 
 
