@@ -9,6 +9,7 @@
 #include "MapGenerator.cpp"
 
 #define DEBUG true
+
 using namespace std;
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);

@@ -105,9 +105,10 @@ public:
 class Map {
     friend class Game;
 private:
+    bool shop_exists = false;
     const int MAX_MAP_WIDTH = 100;
     const int MAX_MAP_HEIGHT = 28;
-    float chest_veroyatnost = 5.25,enemy_veroyatnost=1.25,exit_veroyatnost=1;
+    float chest_veroyatnost = 5.25,enemy_veroyatnost=1.25,exit_veroyatnost=1,shop_veroyatnost = 2.5;
     vector<Room> rooms;
     // { 1:{enemies:{ {1,2},{2,3} },width_and_height:{{20,30}},chests:{{20,30},{30,40},exits:{1,2}} 2:{} 3:{}}
     short exits_number = 0;
@@ -235,9 +236,11 @@ private:
     }
     void CreateRoomContents(vector<vector<char>>& map) {
         bool first_room = true;
-        for (auto room : rooms) {
-            if (!first_room) {
+        for (int i = 1; i < rooms.size();i++) {
+                Room room = rooms[i];
                 bool chest=false, enemy=false, exit=false;
+                
+                BSPNode* node = room.get_node();
                 if (this->enemies_number < MAX_ENEMY_NUMBER) {
                     if ((rand() % static_cast<int>((enemy_veroyatnost * 2))) == 0) { enemy = true; this->enemies_number++; }
                 }
@@ -245,16 +248,17 @@ private:
                     if ((rand() % static_cast<int>((chest_veroyatnost * 2))) == 0) {chest = true; this->chests_number++;}
                 }
                 if (this->exits_number < MAX_EXIT_NUMBER) {
-                    if ((rand() % static_cast<int>((exit_veroyatnost * 2))) == 0) { exit = true; this->exits_number++; }
+                    if ( ((rand() % static_cast<int>((exit_veroyatnost * 2))) == 0) || this->exits_number==0) { exit = true; this->exits_number++; }
                 }
                 vector<vector<char>>* map_ptr = &generated_map;
-                room.generate(exit, chest, enemy,map_ptr);
+                if (!chest && !enemy && !exit) {
+                    //Спецкомната
+                    if ((rand() % static_cast<int>(shop_veroyatnost * 2) == 0)&&!shop_exists) { map[node->y + node->height / 2][node->x + node->width / 2] = 'S'; shop_exists = true; }
+                }
+                else room.generate(exit, chest, enemy,map_ptr);
                 pair<int, int> exit_coords = room.get_exit();
                 pair<int, int> chest_coords = room.get_chest();
                 vector<Enemy> enemies = room.get_enemies();
-                BSPNode* node = room.get_node();
-                
-
                 if (exit_coords.first!=0 && exit_coords.second!=0) map[exit_coords.second][exit_coords.first] = 'R';
                 if (chest_coords.first!=0 && chest_coords.second!=0) map[chest_coords.second][chest_coords.first] = '$';
                 for (auto& enemy : enemies) {
@@ -266,10 +270,7 @@ private:
                 }
 
 
-            }
-            else {
-                first_room = false;
-            }
+            
 
         }
         
