@@ -11,7 +11,7 @@ void Player::HandleKeyboardEvents() {
 	int key;
 	key = _getch();
 	if (canMove) {
-		if (shouldStop()) {
+		if (shouldntStop()) {
 			pair<int, int>& player_coords = *(this->player_coords);
 			if (key == 224) {
 				int second_key = _getch();
@@ -80,7 +80,7 @@ void Player::HandleKeyboardEvents() {
 
 	}
 }
-bool Player::shouldStop() {
+bool Player::shouldntStop() {
 	auto now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> elapsed = now - last_move_time;
 	if (elapsed.count() >= move_interval) {

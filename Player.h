@@ -16,7 +16,7 @@ private:
 	std::mutex& console_mutex;
 	float move_interval=0.05f;
 	std::chrono::steady_clock::time_point last_move_time;
-	bool shouldStop();
+	bool shouldntStop();
 	void Move(int move);
 	
 public:
