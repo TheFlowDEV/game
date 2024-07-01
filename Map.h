@@ -1,7 +1,7 @@
 #pragma once
 #ifndef MAP_H
 #define MAP_H
-
+#include "ConsoleFunctions.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -12,7 +12,6 @@
 
 using namespace std;
 
-void SetXYMG(short X, short Y);
 
 struct BSPNode {
     int x, y, width, height;
@@ -55,6 +54,7 @@ public:
 
 class Map {
     friend class Game;
+    friend class Player;
 private:
     
     bool shop_exists = false;

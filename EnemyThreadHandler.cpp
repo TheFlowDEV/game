@@ -14,11 +14,11 @@ void EnemyThreadHandler::handle_enemies(pair<int, int>& ptr_to_player_coords) {
                     pair<int, int> new_coords = enemy->Move(ptr_to_player_coords);
                     HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
                     console_mutex.lock();
-                    SetXYMG(old_coords.first, old_coords.second);
+                    SetXY(old_coords.first, old_coords.second);
                     vector<vector<char>>& map = *(this->map);
                     map[old_coords.second][old_coords.first] = '.';
                     cout << '.';
-                    SetXYMG(new_coords.first, new_coords.second);
+                    SetXY(new_coords.first, new_coords.second);
                     map[new_coords.second][new_coords.first] = 'E';
                     cout << 'E';
                     console_mutex.unlock();

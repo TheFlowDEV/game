@@ -8,10 +8,10 @@
 #include <ctime>
 #include <map>
 #include "Map.h"
+#include "Player.h"
 #include "Enemy_Thread_Handler.h"
+#include "ConsoleFunctions.h"
 #include <mutex>
-void SetXY(short X, short Y);
-void clear();
 class Game
 {
 private:

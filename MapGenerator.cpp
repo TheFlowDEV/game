@@ -3,11 +3,7 @@
 // НЕ ДОВЕРЯТЬ!!!
 
 using namespace std;
-void SetXYMG(short X, short Y) {
-    COORD coord = { X,Y };
-    HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleCursorPosition(hout, coord);
-}
+
 
 const int MAX_MAP_WIDTH = 100;
 const int MAX_MAP_HEIGHT = 28;
@@ -308,7 +304,7 @@ Map::Map() {
 pair<int, int> Map::spawn_player() {
         BSPNode* node = nodes_of_rooms[0];
         pair<int, int> player_coords = { node->x + node->width / 2,node->y + node->height / 2 };
-        SetXYMG(player_coords.first, player_coords.second);
+        SetXY(player_coords.first, player_coords.second);
         cout << 'P';
         generated_map[player_coords.second][player_coords.first] = 'P';
         return player_coords;

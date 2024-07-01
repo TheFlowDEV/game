@@ -3,13 +3,7 @@
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 std::mutex console_mutex;
-void SetXY(short X, short Y) {
-	COORD coord = { X, Y };
-	SetConsoleCursorPosition(hout, coord);
-}
-void clear() {
-	system("cls");
-}
+
 #define DEBUG true
 
 
@@ -47,7 +41,28 @@ void Game::ShowRecords() {
 	}
 void Game::draw_game() {
 	 long long seed = (clock() * rand()) + (clock()*(rand()+clock()));
+	 Map map = Map();
+	 map.generate();
+	 for (int i = 0; i < map.map_width; i++) {
+		 for (int j = 0; j < map.map_height; j++) {
+			 SetXY(i, j);
+			 cout << map.generated_map[j][i];
 
+
+
+		 }
+	 }
+	 pair<int, int> player_coords = map.spawn_player();
+	 Player player = Player(&map, &player_coords, console_mutex);
+	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map.rooms, &map.generated_map, console_mutex);
+	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(player_coords));
+	 bool NeedStop = false;
+	 while (!NeedStop) {
+		 if (_kbhit()) {
+			 player.HandleKeyboardEvents();
+		 }
+
+	 }
 	}
 	
 void Game::redraw_start_screen(int choose) {
@@ -142,7 +157,6 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-		system("chcp 65001 >> null");
 		setlocale(LC_ALL, "Russian");
 		// Титульник(введение,название игры)
 		SetConsoleTitle(TEXT("Живые клетки"));
@@ -150,7 +164,7 @@ void Game::redraw_start_screen(int choose) {
 		GetConsoleCursorInfo(hout, &cursorInfo);
 		cursorInfo.bVisible = DEBUG; // set the cursor visibility
 		SetConsoleCursorInfo(hout, &cursorInfo);
-		if (!DEBUG) {
+		
 			cout << start_screen;
 			Sleep(1000);
 			clear();
@@ -159,97 +173,9 @@ void Game::redraw_start_screen(int choose) {
 			clear();
 			// основная игра
 			draw_game();
-		}
-		else {
-			Map map = Map();
-			map.generate();
-			for (int i = 0; i < map.map_width; i++) {
-				for (int j = 0; j < map.map_height; j++) {
-					SetXY(i, j);
-					cout << map.generated_map[j][i];
-					
-
-
-				}
-			}
-			pair<int, int> player_coords = map.spawn_player();
-			EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map.rooms, &map.generated_map,console_mutex);
-			thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(player_coords));
-			int key;
-			while (true) {
-				if (_kbhit()) {
-					key = _getch();
-					if (key == 224) {
-						int second_key = _getch();
-						if (second_key == 72) { // стрелка вверх
-							
-							if (player_coords.second - 1 > 0 && map.generated_map[player_coords.second-1][player_coords.first]=='.') {
-								console_mutex.lock();
-								SetXY(player_coords.first, player_coords.second);
-								map.generated_map[player_coords.second][player_coords.first] = '.';
-								cout << '.';
-								
-								SetXY(player_coords.first, player_coords.second-1);
-								player_coords.second -= 1;
-								map.generated_map[player_coords.second][player_coords.first] = 'P';
-								cout << 'P';
-								console_mutex.unlock();
-							}
-						}
-						else if (second_key == 80) { //стрелка вниз
-							if (player_coords.second + 1 < map.map_height && map.generated_map[player_coords.second+1][player_coords.first] == '.') {
-								console_mutex.lock();
-								SetXY(player_coords.first, player_coords.second);
-								map.generated_map[player_coords.second][player_coords.first] = '.';
-								cout << '.';
-								SetXY(player_coords.first, player_coords.second+1);
-								player_coords.second += 1;
-								map.generated_map[player_coords.second][player_coords.first] = 'P';
-								cout << 'P';
-								console_mutex.unlock();
-
-							}
-						}
-						else if (second_key == 75) { // влево
-							if (player_coords.second - 1 > 0 && map.generated_map[player_coords.second][player_coords.first-1] == '.') {
-								console_mutex.lock();
-								SetXY(player_coords.first, player_coords.second);
-								map.generated_map[player_coords.second][player_coords.first] = '.';
-								cout << '.';
-								SetXY(player_coords.first-1, player_coords.second );
-								player_coords.first -= 1;
-								map.generated_map[player_coords.second][player_coords.first] = 'P';
-								cout << 'P';
-								console_mutex.unlock();
-
-							}
-						}
-						else if (second_key == 77) { // вправо
-							if (player_coords.first + 1 < map.map_width && map.generated_map[player_coords.second][player_coords.first+1] == '.') {
-								console_mutex.lock();
-								SetXY(player_coords.first, player_coords.second);
-								map.generated_map[player_coords.second][player_coords.first] = '.';
-								cout << '.';
-								player_coords.first += 1;
-								map.generated_map[player_coords.second][player_coords.first] = 'P';
-								SetXY(player_coords.first, player_coords.second);
-								cout << 'P';
-								console_mutex.unlock();
-
-							}
-						}
-					}
-
-				}
-			}
-			
-		}
-
-
-
-
+		
 	}
-
+	
 int main()
 {
 	Game instance = Game();
