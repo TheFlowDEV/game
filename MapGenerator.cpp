@@ -22,7 +22,7 @@ const short MAX_ENEMY_NUMBER = 10;
 pair<int,int> Enemy::Move(pair<int, int> &player_coords) {
         pair<int, int>& coords = *(this->coords);
         // нужно проверить видимость игрока в пределах комнаты
-        if ((player_coords.first > room->x + 1) && (player_coords.first < room->x + room->width - 1) && (player_coords.second > room->y - 1) && (player_coords.second < room->y + room->height + 1))
+        if ((player_coords.first >= room->x + 1) && (player_coords.first <= room->x + room->width - 1) && (player_coords.second >= room->y - 1) && (player_coords.second <= room->y + room->height + 1))
         {
             //должны выстроить траекторию к нему и идти ПО ОДНОЙ КЛЕТКЕ
             // НЕЛЬЗЯ ИДТИ ЕСЛИ ВПЕРЕДИ ОБЪЕКТ

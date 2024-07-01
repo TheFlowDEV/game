@@ -14,6 +14,9 @@ private:
 	pair<int, int> *player_coords;
 	Map* mapGen;
 	std::mutex& console_mutex;
+	float move_interval=0.05f;
+	std::chrono::steady_clock::time_point last_move_time;
+	bool shouldStop();
 	void Move(int move);
 	
 public:

@@ -4,7 +4,7 @@ HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 std::mutex console_mutex;
 
-#define DEBUG true
+#define DEBUG false
 
 
 string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
