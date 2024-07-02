@@ -13,6 +13,7 @@ class Player {
 private:
 	pair<int, int> *player_coords;
 	Map* mapGen;
+
 	std::mutex& console_mutex;
 	float move_interval=0.05f;
 	std::chrono::steady_clock::time_point last_move_time;
@@ -23,4 +24,6 @@ public:
 	bool canMove=true;
 	Player(Map* map_ptr, pair<int, int>* coords,std::mutex &mutexss);
 	void HandleKeyboardEvents();
+	void GoToBattle();
+
 };

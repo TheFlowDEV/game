@@ -11,7 +11,7 @@ const int minRoomSize = 13;
 const int maxRoomSize = 17;
 const int MAX_EXIT_NUMBER = 1;
 const int MAX_CHEST_NUMBER = 4;
-const short MAX_ENEMY_NUMBER = 10;
+const short MAX_ENEMY_NUMBER = 15;
 
 
  Enemy::Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room) {
@@ -237,6 +237,7 @@ void Map::createRooms(BSPNode* node, int minRoomSize, int maxRoomSize) {
     }
 void Map::CreateRoomContents(vector<vector<char>>& map) {
         rooms.push_back(new Room(nodes_of_rooms[0]));
+
         for (int i = 1; i < nodes_of_rooms.size();i++) {
                 
                 Room* room = new Room(nodes_of_rooms[i]);

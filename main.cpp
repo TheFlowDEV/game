@@ -45,11 +45,8 @@ void Game::draw_game() {
 	 map.generate();
 	 for (int i = 0; i < map.map_width; i++) {
 		 for (int j = 0; j < map.map_height; j++) {
-			 SetXY(i, j);
-			 cout << map.generated_map[j][i];
-
-
-
+				 SetXY(i, j);
+				 cout << map.generated_map[j][i];
 		 }
 	 }
 	 pair<int, int> player_coords = map.spawn_player();

@@ -80,6 +80,10 @@ void Player::HandleKeyboardEvents() {
 
 	}
 }
+void Player::GoToBattle() {
+	this->canMove = false;
+	// битва и отрисовка её
+}
 bool Player::shouldntStop() {
 	auto now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> elapsed = now - last_move_time;
