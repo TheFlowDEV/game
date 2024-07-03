@@ -1,4 +1,6 @@
 #pragma once
+#ifndef PLAYER_H
+#define PLAYER_H
 #include <map>
 #include <utility>
 #include <Windows.h>
@@ -9,17 +11,20 @@
 #include "Map.h"
 #include <iostream>
 #include "ConsoleFunctions.h"
+#include "Enemy.h"
+
 using namespace std;
 class Player {
 private:
 	pair<int, int> *player_coords;
 	Map* mapGen;
-	MainWeapon first_weapon;
-	MainWeapon second_weapon;
-	MainWeapon third_weapon;
-	SecondaryWeapon fs_weapon;
-	SecondaryWeapon ss_weapon;
-	
+	/*
+	MainWeapon first_weapon = MainWeapon();
+	MainWeapon second_weapon = MainWeapon();
+	MainWeapon third_weapon = MainWeapon();
+	SecondaryWeapon fs_weapon = SecondaryWeapon();
+	SecondaryWeapon ss_weapon = SecondaryWeapon();
+	*/
 
 	bool battlemode=false;
 	bool lookinventory = false;
@@ -48,3 +53,4 @@ public:
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };
+#endif

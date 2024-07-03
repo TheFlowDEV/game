@@ -12,5 +12,11 @@ Weapon::Weapon(TYPES type):MainWeapon(type) {
 		break;
 	}
 }
-MainWeapon::MainWeapon() {}
-SecondaryWeapon::SecondaryWeapon(){}
+
+SecondaryWeapon::SecondaryWeapon(ACTIONS type) {
+	this->type = type;
+}
+SecondaryWeapon::SecondaryWeapon()
+{
+	
+}

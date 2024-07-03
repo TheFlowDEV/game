@@ -1,3 +1,6 @@
+#pragma once
+#ifndef EN_THD_H
+#define EN_THD_H
 #include "Map.h"
 #include <mutex>
 
@@ -13,3 +16,4 @@ public:
     void stop();
 
 };
+#endif

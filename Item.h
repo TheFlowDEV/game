@@ -1,14 +1,16 @@
 #pragma once
+#ifndef ITEM_H
+#define ITEM_H
 #include <iostream>
 using namespace std;
 enum TYPES { SWORD, BOW,SHIELD};
 enum ACTIONS {HEAL,DAMAGE,RAISE_CHARACTERISTICS,RANDOM};
+class Player;
 class MainWeapon {
 private:
 	TYPES type;
 public:
 	MainWeapon(TYPES type);
-	MainWeapon();
 };
 class Weapon:MainWeapon {
 private:
@@ -28,6 +30,8 @@ class SecondaryWeapon {
 private:
 	ACTIONS type;
 public:
+	SecondaryWeapon(ACTIONS type);
 	SecondaryWeapon();
-	int Use();
+	int Use(Player* player);
 };
+#endif

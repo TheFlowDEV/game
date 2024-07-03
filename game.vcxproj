@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleFunctions.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyThreadHandler.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleFunctions.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Enemy_Thread_Handler.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Main.h" />

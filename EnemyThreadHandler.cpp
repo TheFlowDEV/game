@@ -1,4 +1,6 @@
 #include "Enemy_Thread_Handler.h"
+#include "Enemy.h"
+
 EnemyThreadHandler::EnemyThreadHandler(vector<Room*>* room_ptr, vector<vector<char>>* map_ptr,std::mutex& console_mutexss):console_mutex(console_mutexss) {
         map = map_ptr;
         rooms = room_ptr;

@@ -11,6 +11,8 @@
 #include <Windows.h>
 #include "Item.h"
 
+class Enemy;
+
 const int MAX_MAP_WIDTH = 100;
 const int MAX_MAP_HEIGHT = 28;
 const int minRoomSize = 13;
@@ -34,21 +36,7 @@ struct BSPNode {
 };
 
 
-enum ENEMY_TYPES { ICE_GOLEM, ORK, BAT, ZOMBIE, SKELETON, THEBOSS };
-class Enemy {
-private:
-    ENEMY_TYPES type;
-    pair<int, int>* coords = new pair<int, int>;
-    vector<vector<char>>* map;
-    BSPNode* room;
 
-public:
-    Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room);
-    pair<int, int> Move(pair<int, int>& player_coords);
-    pair<int, int> get_coords();
-    void GetDamage(TYPES type_of_weapon, int damage);
-    ~Enemy();
-};
 
 class Room {
 private:
