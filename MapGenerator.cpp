@@ -1,7 +1,6 @@
 ﻿#include "Map.h"
 #include "Enemy.h"
-// КОД ЧАСТИЧНО СДЕЛАН С ПОМОЩЬЮ CHATGPT
-// НЕ ДОВЕРЯТЬ!!!
+
 
 using namespace std;
 
@@ -212,6 +211,9 @@ void Map::CreateRoomContents(vector<vector<char>>& map) {
 
                     pair<int, int> enemy_coord = (*enemy).get_coords();
                     if (enemy_coord.first != 0 && enemy_coord.second != 0) {
+                        if (map[enemy_coord.second][enemy_coord.first] == 'R') {
+                            enemy_coord.second++;
+                        }
                         map[enemy_coord.second][enemy_coord.first] = 'E';
                         
                     }
@@ -225,13 +227,33 @@ void Map::CreateRoomContents(vector<vector<char>>& map) {
     }
     
    
+void Map::CleanALL() {
+    DeleteBSPNode(root_node);
+    for (auto& room : rooms) {
+        for (auto& enemy : *(room->get_enemies())) {
+            //delete enemy->coords;
+            delete enemy;
+        }
 
+        room->get_enemies()->clear();
+        delete room;
+    }
+    nodes_of_rooms.clear();
+    rooms.clear();
+    exits_number = 0;
+    chests_number = 0;
+    enemies_number = 0;
+    shop_exists = false;
+}
 
-void Map::generate() {
-    
+void Map::generate(bool regenerate) {
+    if (regenerate) {
+        CleanALL();
+     }
         srand(static_cast<unsigned>(time(nullptr)));
         vector<vector<char>> map(MAX_MAP_HEIGHT, vector<char>(MAX_MAP_WIDTH, '#'));
         BSPNode* root = new BSPNode(0, 0, MAX_MAP_WIDTH, MAX_MAP_HEIGHT);
+        root_node = root;
         split(root, minRoomSize);
         createRooms(root, minRoomSize, maxRoomSize);
         drawRooms(root, map);
@@ -246,6 +268,12 @@ Map::Map() {
     this->map_width = MAX_MAP_WIDTH;
     this->map_height = MAX_MAP_HEIGHT;
 }
+void Map::DeleteBSPNode(BSPNode* node) {
+    if (node->left) DeleteBSPNode(node->left);
+    if (node->right) DeleteBSPNode(node->right);
+    delete node;
+}
+
 pair<int, int> Map::spawn_player() {
         BSPNode* node = nodes_of_rooms[0];
         pair<int, int> player_coords = { node->x + node->width / 2,node->y + node->height / 2 };

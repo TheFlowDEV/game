@@ -11,6 +11,7 @@ private:
 	TYPES type;
 public:
 	MainWeapon(TYPES type);
+	MainWeapon();
 };
 class Weapon:MainWeapon {
 private:

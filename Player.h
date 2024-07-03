@@ -9,22 +9,23 @@
 #include "Item.h"
 #include <conio.h>
 #include "Map.h"
+#include "map"
 #include <iostream>
 #include "ConsoleFunctions.h"
 #include "Enemy.h"
-
+enum Moves{UP,DOWN,LEFT,RIGHT};
 using namespace std;
 class Player {
 private:
 	pair<int, int> *player_coords;
 	Map* mapGen;
-	/*
-	MainWeapon first_weapon = MainWeapon();
-	MainWeapon second_weapon = MainWeapon();
-	MainWeapon third_weapon = MainWeapon();
-	SecondaryWeapon fs_weapon = SecondaryWeapon();
-	SecondaryWeapon ss_weapon = SecondaryWeapon();
-	*/
+	std::map<string, bool>& emitter;
+	MainWeapon first_weapon;
+	MainWeapon second_weapon;
+	MainWeapon third_weapon;
+	SecondaryWeapon fs_weapon;
+	SecondaryWeapon ss_weapon;
+	
 
 	bool battlemode=false;
 	bool lookinventory = false;
@@ -41,15 +42,17 @@ private:
 	float move_interval=0.05f;
 	std::chrono::steady_clock::time_point last_move_time;
 	bool shouldntStop();
-	void Move(int move);
+	void Move(Moves move);
 	
 public:
 	bool canMove=true;
-	Player(Map* map_ptr, pair<int, int>* coords,std::mutex &mutexss);
+	Player(std::mutex &mutexss,std::map<string,bool>& emit);
+	void UpdateMap(Map* map_ptr, pair<int, int>* coords);
+	void SetEmitter(std::map<string, bool>& emitter);
 	void HandleKeyboardEvents();
 	void GoToBattle();
 	void LevelUp();
-	//char NearThePlayer();
+	bool EnemyNearThePlayer();
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };

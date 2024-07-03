@@ -57,10 +57,12 @@ public:
 class Map {
     friend class Game;
     friend class Player;
+    friend class EnemyThreadHandler;
 private:
-    
+    BSPNode* root_node;
     bool shop_exists = false;
-    float chest_veroyatnost = 5.25, enemy_veroyatnost = 1.25, exit_veroyatnost = 1, shop_veroyatnost = 2.5;    vector<Room*> rooms;
+    float chest_veroyatnost = 5.25, enemy_veroyatnost = 1.25, exit_veroyatnost = 1, shop_veroyatnost = 2.5;   
+    vector<Room*> rooms;
     vector<BSPNode*> nodes_of_rooms;
     short exits_number = 0;
     short chests_number = 0;
@@ -73,9 +75,11 @@ private:
     bool split(BSPNode* node, int minRoomSize);
     void createRooms(BSPNode* node, int minRoomSize, int maxRoomSize);
     void CreateRoomContents(vector<vector<char>>& map);
+    void DeleteBSPNode (BSPNode* node);
 public:
     Map();
-    void generate();
+    void CleanALL();
+    void generate(bool regenerate=false);
     pair<int, int> spawn_player();
     
 };

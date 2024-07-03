@@ -26,10 +26,11 @@ void EnemyThreadHandler::handle_enemies(pair<int, int>& ptr_to_player_coords) {
                     console_mutex.unlock();
                 }
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(350));
         }
     }
 void EnemyThreadHandler::stop() {
         this->condition_to_stop_enemy_thread = true;
+
 
     }

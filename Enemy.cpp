@@ -5,6 +5,7 @@ Enemy::Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room) {
     *(this->coords) = coords;
     this->map = map;
     this->room = room;
+    this->type = static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
 }
 pair<int, int> Enemy::Move(pair<int, int>& player_coords) {
     pair<int, int>& coords = *(this->coords);

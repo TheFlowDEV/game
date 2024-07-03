@@ -20,3 +20,6 @@ SecondaryWeapon::SecondaryWeapon()
 {
 	
 }
+MainWeapon::MainWeapon() {
+
+}

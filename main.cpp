@@ -1,11 +1,10 @@
 ﻿#include "Main.h"
 
+
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
-std::mutex console_mutex;
 
 #define DEBUG false
-
 
 string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 
@@ -40,9 +39,14 @@ void Game::ShowRecords() {
 
 	}
 void Game::draw_game(bool first_start=true) {
-	 if (first_start) seed = (clock() * rand()) + (clock()*(rand()+clock()));
-	 Map map = Map();
-	 map.generate();
+	if (first_start) {
+		seed = (clock() * rand()) + (clock() * (rand() + clock()));
+	}
+	 
+
+	 if (first_start) map.generate();
+	 else map.generate(true);
+
 	 for (int i = 0; i < map.map_width; i++) {
 		 for (int j = 0; j < map.map_height; j++) {
 				 SetXY(i, j);
@@ -50,15 +54,44 @@ void Game::draw_game(bool first_start=true) {
 		 }
 	 }
 	 pair<int, int> player_coords = map.spawn_player();
-	 Player player = Player(&map, &player_coords, console_mutex);
+	 player.UpdateMap(&map,&player_coords);
+	 
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map.rooms, &map.generated_map, console_mutex);
 	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(player_coords));
-	 bool NeedStop = false;
-	 while (!NeedStop) {
+	 bool needStop = false;
+	 player.canMove = true;
+	 int key;
+	 while (!needStop) {
 		 if (_kbhit()) {
 			 player.HandleKeyboardEvents();
 		 }
+		 if (emitter["special"]) {
+			 enemy_thread_handler.stop();
+			 player.canMove = false;
+			 if (emitter["regen"]) {
+				 needStop = true;
+			 }
+			 else if (emitter["exit"]) needStop = true;
 
+		 }
+		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
+
+	 }
+	 
+	 if (!emitter["exit"]) {
+		 enemy_thread.join();
+		 current_etage++;
+		 emitter["special"] = false;
+		 emitter["chest"] = false;
+		 emitter["regen"] = false;
+
+		 clear();
+		 draw_game(false);
+	 }
+	 else {
+		 enemy_thread.join();
+		 map.CleanALL();
+		 clear();
 	 }
 	}
 	
@@ -177,4 +210,5 @@ int main()
 {
 	Game instance = Game();
 	instance.Initialize();
+	return 0;
 }

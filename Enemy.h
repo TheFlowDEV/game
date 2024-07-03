@@ -3,6 +3,7 @@
 #define ENEMY_H
 #include "utility"
 #include "vector"
+class Map;
 using namespace std;
 struct BSPNode;
 enum TYPES;
@@ -13,8 +14,9 @@ private:
     pair<int, int>* coords = new pair<int, int>;
     vector<vector<char>>* map;
     BSPNode* room;
-
+    int hp;
 public:
+    friend class Map;
     Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room);
     pair<int, int> Move(pair<int, int>& player_coords);
     pair<int, int> get_coords();

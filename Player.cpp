@@ -1,9 +1,106 @@
 #include "Player.h"
-void Player::Move(int move) {
-	
+
+void Player::Move(Moves move) {
+	pair<int, int>& player_coords = *(this->player_coords);
+	switch (move) {
+	case UP:
+		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second - 1][player_coords.first] == '.') {
+
+			console_mutex.lock();
+			SetXY(player_coords.first, player_coords.second);
+			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
+			cout << '.';
+
+			SetXY(player_coords.first, player_coords.second - 1);
+			player_coords.second -= 1;
+			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
+			cout << 'P';
+			console_mutex.unlock();
+		}
+		if (mapGen->generated_map[player_coords.second - 1][player_coords.first] == '$') {
+			emitter["chest"] = true;
+			emitter["special"] = true;
+		}
+		else if (mapGen->generated_map[player_coords.second - 1][player_coords.first] == 'R') {
+			emitter["regen"] = true;
+			emitter["special"] = true;
+		}
+		break;
+	case DOWN:
+		if (player_coords.second + 1 < mapGen->map_height && mapGen->generated_map[player_coords.second + 1][player_coords.first] == '.') {
+			console_mutex.lock();
+			SetXY(player_coords.first, player_coords.second);
+			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
+			cout << '.';
+			SetXY(player_coords.first, player_coords.second + 1);
+			player_coords.second += 1;
+			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
+			cout << 'P';
+			console_mutex.unlock();
+
+		}
+		if (mapGen->generated_map[player_coords.second + 1][player_coords.first] == '$') {
+			emitter["chest"] = true;
+			emitter["special"] = true;
+		}
+		else if (mapGen->generated_map[player_coords.second + 1][player_coords.first] == 'R') {
+			emitter["regen"] = true;
+			emitter["special"] = true;
+		}
+		break;
+
+	case LEFT:
+		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second][player_coords.first - 1] == '.') {
+			console_mutex.lock();
+			SetXY(player_coords.first, player_coords.second);
+			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
+			cout << '.';
+			SetXY(player_coords.first - 1, player_coords.second);
+			player_coords.first -= 1;
+			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
+			cout << 'P';
+			console_mutex.unlock();
+
+		}
+		if (mapGen->generated_map[player_coords.second][player_coords.first-1] == '$') {
+			emitter["chest"] = true;
+			emitter["special"] = true;
+		}
+		else if (mapGen->generated_map[player_coords.second][player_coords.first-1] == 'R') {
+			emitter["regen"] = true;
+			emitter["special"] = true;
+		}
+		break;
+	case RIGHT:
+		if (player_coords.first + 1 < mapGen->map_width && mapGen->generated_map[player_coords.second][player_coords.first + 1] == '.') {
+			console_mutex.lock();
+			SetXY(player_coords.first, player_coords.second);
+			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
+			cout << '.';
+			player_coords.first += 1;
+			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
+			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
+			SetXY(player_coords.first, player_coords.second);
+			cout << 'P';
+			console_mutex.unlock();
+
+		}
+		if (mapGen->generated_map[player_coords.second][player_coords.first+1] == '$') {
+			emitter["chest"] = true;
+			emitter["special"] = true;
+		}
+		else if (mapGen->generated_map[player_coords.second][player_coords.first+1] == 'R') {
+			emitter["regen"] = true;
+			emitter["special"] = true;
+		}
+		break;
+	}
 }
 
-Player::Player(Map* map_ptr, pair<int, int>* coords, mutex& mutexss) :console_mutex(mutexss){
+Player::Player(mutex& mutexss, std::map<string, bool>& emit) :console_mutex(mutexss), emitter(emit) {
+	
+}
+void Player::UpdateMap(Map* map_ptr, pair<int, int>* coords) {
 	this->player_coords = coords;
 	this->mapGen = map_ptr;
 }
@@ -16,64 +113,24 @@ void Player::HandleKeyboardEvents() {
 			if (key == 224) {
 				int second_key = _getch();
 				if (second_key == 72) { // стрелка вверх
-					if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second - 1][player_coords.first] == '.') {
-
-						console_mutex.lock();
-						SetXY(player_coords.first, player_coords.second);
-						mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-						cout << '.';
-
-						SetXY(player_coords.first, player_coords.second - 1);
-						player_coords.second -= 1;
-						mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-						cout << 'P';
-						console_mutex.unlock();
-					}
+					Move(UP);
+					
 				}
 				else if (second_key == 80) { //стрелка вниз
-					if (player_coords.second + 1 < mapGen->map_height && mapGen->generated_map[player_coords.second + 1][player_coords.first] == '.') {
-						console_mutex.lock();
-						SetXY(player_coords.first, player_coords.second);
-						mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-						cout << '.';
-						SetXY(player_coords.first, player_coords.second + 1);
-						player_coords.second += 1;
-						mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-						cout << 'P';
-						console_mutex.unlock();
-
-					}
+					Move(DOWN);
 				}
 				else if (second_key == 75) { // влево
-					if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second][player_coords.first - 1] == '.') {
-						console_mutex.lock();
-						SetXY(player_coords.first, player_coords.second);
-						mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-						cout << '.';
-						SetXY(player_coords.first - 1, player_coords.second);
-						player_coords.first -= 1;
-						mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-						cout << 'P';
-						console_mutex.unlock();
-
-					}
+					Move(LEFT);
 				}
 				else if (second_key == 77) { // вправо
-					if (player_coords.first + 1 < mapGen->map_width && mapGen->generated_map[player_coords.second][player_coords.first + 1] == '.') {
-						console_mutex.lock();
-						SetXY(player_coords.first, player_coords.second);
-						mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-						cout << '.';
-						player_coords.first += 1;
-						mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-						mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-						SetXY(player_coords.first, player_coords.second);
-						cout << 'P';
-						console_mutex.unlock();
-
-					}
+					Move(RIGHT);
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			}
+			else if (key == 27) {
+				canMove = false;
+				emitter["exit"] = true;
+				emitter["special"] = true;
 			}
 		}
 
@@ -83,7 +140,7 @@ void Player::HandleKeyboardEvents() {
 }
 void Player::GoToBattle() {
 	this->canMove = false;
-	// битва и отрисовка её
+	// условие битвы для handleKeyboardEvents и отрисовка её
 }
 bool Player::shouldntStop() {
 	auto now = std::chrono::steady_clock::now();
@@ -97,9 +154,16 @@ bool Player::shouldntStop() {
 void Player::LevelUp() {
 
 }
-/*
-char Player::NearThePlayer() {
-	char object = '.';
+
+bool Player::EnemyNearThePlayer() {
 	//что вблизи игрока
+	int x = this->player_coords->first;
+	int y = this->player_coords->second;
+	vector<vector<char>> map = this->mapGen->generated_map;
+	char l_object=map[y][x-1], d_object = map[y+1][x], u_object =map[y-1][x], r_object = map[y][x+1];
+	if (l_object == 'E' || d_object == 'E' || r_object == 'E' || u_object == 'E') return true;
+	return false;
+
+
+	
 }
-*/
