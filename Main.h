@@ -18,8 +18,9 @@
 class Game
 {
 private:
+	long long seed;
 	void ShowRecords();
-	void draw_game();
+	void draw_game(bool first_start);
 	void redraw_start_screen(int choose);
 
 	void draw_start_screen();

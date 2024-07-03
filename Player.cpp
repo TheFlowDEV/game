@@ -3,7 +3,7 @@ void Player::Move(int move) {
 	
 }
 
-Player::Player(Map* map_ptr, pair<int, int>* coords,mutex &mutexss):console_mutex(mutexss) {
+Player::Player(Map* map_ptr, pair<int, int>* coords, mutex& mutexss) :console_mutex(mutexss){
 	this->player_coords = coords;
 	this->mapGen = map_ptr;
 }
@@ -79,6 +79,7 @@ void Player::HandleKeyboardEvents() {
 
 
 	}
+
 }
 void Player::GoToBattle() {
 	this->canMove = false;
@@ -93,3 +94,12 @@ bool Player::shouldntStop() {
 	}
 	return false;
 }
+void Player::LevelUp() {
+
+}
+/*
+char Player::NearThePlayer() {
+	char object = '.';
+	//что вблизи игрока
+}
+*/

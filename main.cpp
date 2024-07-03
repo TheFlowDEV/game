@@ -39,8 +39,8 @@ void Game::ShowRecords() {
 		}
 
 	}
-void Game::draw_game() {
-	 long long seed = (clock() * rand()) + (clock()*(rand()+clock()));
+void Game::draw_game(bool first_start=true) {
+	 if (first_start) seed = (clock() * rand()) + (clock()*(rand()+clock()));
 	 Map map = Map();
 	 map.generate();
 	 for (int i = 0; i < map.map_width; i++) {

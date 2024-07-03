@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="ConsoleFunctions.cpp" />
     <ClCompile Include="EnemyThreadHandler.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="Player.cpp" />

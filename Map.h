@@ -9,8 +9,18 @@
 #include <ctime>
 #include <thread>
 #include <Windows.h>
+#include "Item.h"
+
+const int MAX_MAP_WIDTH = 100;
+const int MAX_MAP_HEIGHT = 28;
+const int minRoomSize = 13;
+const int maxRoomSize = 17;
+const int MAX_EXIT_NUMBER = 1;
+const int MAX_CHEST_NUMBER = 4;
+const short MAX_ENEMY_NUMBER = 15;
 
 using namespace std;
+
 
 
 struct BSPNode {
@@ -23,9 +33,12 @@ struct BSPNode {
         : x(x), y(y), width(width), height(height), left(nullptr), right(nullptr), isLeaf(true) {}
 };
 
+
+enum ENEMY_TYPES { ICE_GOLEM, ORK, BAT, ZOMBIE, SKELETON, THEBOSS };
 class Enemy {
 private:
-    pair<int, int>* coords= new pair<int,int>;
+    ENEMY_TYPES type;
+    pair<int, int>* coords = new pair<int, int>;
     vector<vector<char>>* map;
     BSPNode* room;
 
@@ -33,6 +46,7 @@ public:
     Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room);
     pair<int, int> Move(pair<int, int>& player_coords);
     pair<int, int> get_coords();
+    void GetDamage(TYPES type_of_weapon, int damage);
     ~Enemy();
 };
 
