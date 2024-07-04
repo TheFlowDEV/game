@@ -25,7 +25,7 @@ void Room::generate(bool exit, bool chest, bool enemy,vector<vector<char>> *map)
         if (chest) {
             this->chest.first = rand() % (node->width - 1) + node->x + 1;
             this->chest.second = rand() % (node->height - 1) + node->y + 1;
-            
+            if (this->chest == this->exit) this->chest.second + 1;
         }
         
         if (enemy) {
@@ -231,7 +231,6 @@ void Map::CleanALL() {
     DeleteBSPNode(root_node);
     for (auto& room : rooms) {
         for (auto& enemy : *(room->get_enemies())) {
-            //delete enemy->coords;
             delete enemy;
         }
 

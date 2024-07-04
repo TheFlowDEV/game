@@ -17,9 +17,10 @@ enum Moves{UP,DOWN,LEFT,RIGHT};
 using namespace std;
 class Player {
 private:
-	pair<int, int> *player_coords;
 	Map* mapGen;
 	std::map<string, bool>& emitter;
+	std::map<string, pair<int, int>>& coords_emitter;
+
 	MainWeapon first_weapon;
 	MainWeapon second_weapon;
 	MainWeapon third_weapon;
@@ -45,8 +46,9 @@ private:
 	void Move(Moves move);
 	
 public:
+	pair<int, int>* player_coords;
 	bool canMove=true;
-	Player(std::mutex &mutexss,std::map<string,bool>& emit);
+	Player(std::mutex &mutexss,std::map<string,bool>& emit,std::map<string,pair<int,int>>& coords_emit);
 	void UpdateMap(Map* map_ptr, pair<int, int>* coords);
 	void SetEmitter(std::map<string, bool>& emitter);
 	void HandleKeyboardEvents();

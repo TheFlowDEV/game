@@ -7,13 +7,15 @@
 class EnemyThreadHandler {
 private:
     bool condition_to_stop_enemy_thread = false;
-    vector<Room*>* rooms;
-    vector<vector<char>>* map;
+    Map* mapgen;
+    
     std::mutex& console_mutex;
+    bool stopMoving_cond=false;
 public:
-    EnemyThreadHandler(vector<Room*>* room_ptr, vector<vector<char>>* map_ptr, std::mutex& console_mutexss);
+    EnemyThreadHandler(Map* mapgen, std::mutex& console_mutexss);
     void handle_enemies(pair<int, int>& ptr_to_player_coords);
     void stop();
-
+    void stopMoving();
+    void startMoving();
 };
 #endif

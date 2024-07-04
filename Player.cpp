@@ -17,13 +17,23 @@ void Player::Move(Moves move) {
 			cout << 'P';
 			console_mutex.unlock();
 		}
-		if (mapGen->generated_map[player_coords.second - 1][player_coords.first] == '$') {
-			emitter["chest"] = true;
-			emitter["special"] = true;
-		}
-		else if (mapGen->generated_map[player_coords.second - 1][player_coords.first] == 'R') {
-			emitter["regen"] = true;
-			emitter["special"] = true;
+		else {
+			switch (mapGen->generated_map[player_coords.second - 1][player_coords.first])
+			{
+			case '$':
+				coords_emitter["chest"] = { player_coords.first,player_coords.second - 1 };
+				emitter["chest"] = true;
+				emitter["special"] = true;
+				break;
+			case 'R':
+				emitter["regen"] = true;
+				emitter["special"] = true;
+				break;
+			case 'S':
+				emitter["shop"] = true;
+				emitter["special"] = true;
+				break;
+			}
 		}
 		break;
 	case DOWN:
@@ -39,18 +49,28 @@ void Player::Move(Moves move) {
 			console_mutex.unlock();
 
 		}
-		if (mapGen->generated_map[player_coords.second + 1][player_coords.first] == '$') {
-			emitter["chest"] = true;
-			emitter["special"] = true;
-		}
-		else if (mapGen->generated_map[player_coords.second + 1][player_coords.first] == 'R') {
-			emitter["regen"] = true;
-			emitter["special"] = true;
+		else {
+			switch (mapGen->generated_map[player_coords.second + 1][player_coords.first])
+			{
+			case '$':
+				coords_emitter["chest"] = { player_coords.first,player_coords.second + 1 };
+				emitter["chest"] = true;
+				emitter["special"] = true;
+				break;
+			case 'R':
+				emitter["regen"] = true;
+				emitter["special"] = true;
+				break;
+			case 'S':
+				emitter["shop"] = true;
+				emitter["special"] = true;
+				break;
+			}
 		}
 		break;
 
 	case LEFT:
-		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second][player_coords.first - 1] == '.') {
+		if (player_coords.second > 0 && mapGen->generated_map[player_coords.second][player_coords.first - 1] == '.') {
 			console_mutex.lock();
 			SetXY(player_coords.first, player_coords.second);
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
@@ -62,13 +82,23 @@ void Player::Move(Moves move) {
 			console_mutex.unlock();
 
 		}
-		if (mapGen->generated_map[player_coords.second][player_coords.first-1] == '$') {
-			emitter["chest"] = true;
-			emitter["special"] = true;
-		}
-		else if (mapGen->generated_map[player_coords.second][player_coords.first-1] == 'R') {
-			emitter["regen"] = true;
-			emitter["special"] = true;
+		else {
+			switch (mapGen->generated_map[player_coords.second][player_coords.first - 1])
+			{
+			case '$':
+				coords_emitter["chest"] = { player_coords.first - 1,player_coords.second };
+				emitter["chest"] = true;
+				emitter["special"] = true;
+				break;
+			case 'R':
+				emitter["regen"] = true;
+				emitter["special"] = true;
+				break;
+			case 'S':
+				emitter["shop"] = true;
+				emitter["special"] = true;
+				break;
+			}
 		}
 		break;
 	case RIGHT:
@@ -85,19 +115,29 @@ void Player::Move(Moves move) {
 			console_mutex.unlock();
 
 		}
-		if (mapGen->generated_map[player_coords.second][player_coords.first+1] == '$') {
-			emitter["chest"] = true;
-			emitter["special"] = true;
+		else {
+			switch (mapGen->generated_map[player_coords.second][player_coords.first + 1])
+			{
+			case '$':
+				coords_emitter["chest"] = { player_coords.first + 1,player_coords.second };
+				emitter["chest"] = true;
+				emitter["special"] = true;
+				break;
+			case 'R':
+				emitter["regen"] = true;
+				emitter["special"] = true;
+				break;
+			case 'S':
+				emitter["shop"] = true;
+				emitter["special"] = true;
+				break;
+			}
+			break;
 		}
-		else if (mapGen->generated_map[player_coords.second][player_coords.first+1] == 'R') {
-			emitter["regen"] = true;
-			emitter["special"] = true;
-		}
-		break;
 	}
 }
 
-Player::Player(mutex& mutexss, std::map<string, bool>& emit) :console_mutex(mutexss), emitter(emit) {
+Player::Player(mutex& mutexss, std::map<string, bool>& emit,std::map<string,pair<int,int>>& coords_emit) :console_mutex(mutexss), emitter(emit),coords_emitter(coords_emit) {
 	
 }
 void Player::UpdateMap(Map* map_ptr, pair<int, int>* coords) {

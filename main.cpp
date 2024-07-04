@@ -1,6 +1,5 @@
 ﻿#include "Main.h"
 
-
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -43,58 +42,112 @@ void Game::draw_game(bool first_start=true) {
 		seed = (clock() * rand()) + (clock() * (rand() + clock()));
 	}
 	 
+	
 
-	 if (first_start) map.generate();
-	 else map.generate(true);
+	if (first_start) map.generate();
+	else map.generate(true);
 
 	 for (int i = 0; i < map.map_width; i++) {
 		 for (int j = 0; j < map.map_height; j++) {
+			 switch (map.generated_map[j][i]) {
+			 case 'R':
+				 SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
 				 SetXY(i, j);
 				 cout << map.generated_map[j][i];
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 break;
+
+			 default:
+				 SetXY(i, j);
+				 cout << map.generated_map[j][i];
+				 break;
+			 }
 		 }
 	 }
-	 pair<int, int> player_coords = map.spawn_player();
-	 player.UpdateMap(&map,&player_coords);
+	 pair<int, int> player_coords;
 	 
-	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map.rooms, &map.generated_map, console_mutex);
-	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(player_coords));
+	 player_coords = map.spawn_player();
+	 player.UpdateMap(&map, &player_coords); 
+	 
+	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
+	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
 	 bool needStop = false;
 	 player.canMove = true;
-	 int key;
 	 while (!needStop) {
 		 if (_kbhit()) {
 			 player.HandleKeyboardEvents();
 		 }
 		 if (emitter["special"]) {
-			 enemy_thread_handler.stop();
+			 enemy_thread_handler.stopMoving();
 			 player.canMove = false;
 			 if (emitter["regen"]) {
-				 needStop = true;
-			 }
-			 else if (emitter["exit"]) needStop = true;
+				 current_etage++;
+				 emitter["special"] = false;
+				 emitter["regen"] = false;
+				 clear();
+				 redraw_map(true);
+				 player.canMove = true;
+				 enemy_thread_handler.startMoving();
 
+			 }
+			 else if (emitter["chest"]) {
+				 clear();
+				 map.generated_map[coords_emitter["chest"].second][coords_emitter["chest"].first] = '.';
+				 coords_emitter["chest"] = { 0,0 };
+				 emitter["special"] = false;
+				 emitter["chest"] = false;
+				 redraw_map(false);
+				 player.canMove = true;
+				 enemy_thread_handler.startMoving();
+
+			 }
+			 else if (emitter["shop"]) {
+				 clear();
+				 emitter["special"] = false;
+				 emitter["shop"] = false;
+				 redraw_map(false);
+				 player.canMove = true;
+				 enemy_thread_handler.startMoving();
+			 }
 		 }
 		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
 
 	 }
 	 
-	 if (!emitter["exit"]) {
-		 enemy_thread.join();
-		 current_etage++;
-		 emitter["special"] = false;
-		 emitter["chest"] = false;
-		 emitter["regen"] = false;
-
-		 clear();
-		 draw_game(false);
-	 }
-	 else {
+	
+	 if (emitter["exit"]) {
+		 enemy_thread_handler.stop();
 		 enemy_thread.join();
 		 map.CleanALL();
 		 clear();
 	 }
 	}
 	
+void Game::redraw_map(bool regenerate) {
+
+	if (regenerate) {
+		map.generate(true);
+		*(player.player_coords) = map.spawn_player();
+	}
+	for (int i = 0; i < map.map_width; i++) {
+		for (int j = 0; j < map.map_height; j++) {
+			switch (map.generated_map[j][i]) {
+			case 'R':
+				SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
+				SetXY(i, j);
+				cout << map.generated_map[j][i];
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15)); 
+				break;
+
+			default:
+				SetXY(i, j);
+				cout << map.generated_map[j][i];
+				break;
+			}
+		}
+	}
+	
+}
 void Game::redraw_start_screen(int choose) {
 		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		clear();
@@ -206,6 +259,8 @@ void Game::redraw_start_screen(int choose) {
 		
 	}
 	
+
+
 int main()
 {
 	Game instance = Game();

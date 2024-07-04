@@ -19,16 +19,17 @@ enum NXT_ACTIONS{BATTLE,NEXT_ETAGE};
 class Game
 {
 private:
-	std::map<string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false} };
-	Player player = Player(console_mutex,emitter);
+	std::map<string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false}};
+	std::map<string, pair<int, int>>coords_emitter{ {"chest",{0,0}}};
+	Player player = Player(console_mutex,emitter,coords_emitter);
 	Map map = Map();
 	long long seed;
 	int current_etage=0;
 	void ShowRecords();
 	void draw_game(bool first_start);
 	void redraw_start_screen(int choose);
-
 	void draw_start_screen();
+	void redraw_map(bool regenerate);
 public:
 	void Initialize();
 
