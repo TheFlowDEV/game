@@ -109,6 +109,9 @@ void Game::draw_game(bool first_start=true) {
 				 player.canMove = true;
 				 enemy_thread_handler.startMoving();
 			 }
+			 else if (emitter["exit"]) {
+				 needStop = true;
+			 }
 		 }
 		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
 
