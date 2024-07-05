@@ -15,7 +15,7 @@ pair<int, int> Enemy::Move(pair<int, int>& player_coords) {
         //должны выстроить траекторию к нему и идти ПО ОДНОЙ КЛЕТКЕ
         // НЕЛЬЗЯ ИДТИ ЕСЛИ ВПЕРЕДИ ОБЪЕКТ
 
-        if (player_coords.first > coords.first && coords.first + 1 < MAX_MAP_WIDTH && ((*this->map)[coords.second][coords.first + 1] == '.')) {
+        if (player_coords.first > coords.first && coords.first + 1 < MAX_MAP_WIDTH && ((*this->map)[coords.second][coords.first + 1] == '.' && coords.first+1<=room->x+room->width)) {
             coords.first += 1;
 
         }
@@ -33,16 +33,17 @@ pair<int, int> Enemy::Move(pair<int, int>& player_coords) {
     }
     // иначе просто в рандомную позицию идти(В ПРЕДЕЛАХ КОМНАТЫ)
     else {
-        if (rand() % 2 == 1 && (*map)[coords.second + 1][coords.first] == '.') {
+        int rand_num = rand();
+        if (rand_num % 4 == 0 && (*map)[coords.second + 1][coords.first] == '.' && coords.second + 1 <= room->y+room->height) {
             coords.second += 1;
         }
-        else if (rand() % 2 == 0 && (*map)[coords.second][coords.first + 1] == '.') {
+        else if (rand_num % 4 == 1 && (*map)[coords.second][coords.first + 1] == '.'  && coords.first + 1 <= room->x +room->width) {
             coords.first += 1;
         }
-        else if (rand() % 2 == 1 && (*map)[coords.second - 1][coords.first] == '.') {
+        else if (rand_num % 4 == 2 && (*map)[coords.second - 1][coords.first] == '.' && coords.second - 1 >= room->y) {
             coords.second -= 1;
         }
-        else if (rand() % 2 == 0 && (*map)[coords.second][coords.first - 1] == '.') {
+        else if (rand_num % 4 == 3 && (*map)[coords.second][coords.first - 1] == '.' && coords.first - 1 >= room->x) {
             coords.first -= 1;
         }
         return coords;

@@ -6,7 +6,35 @@ HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 #define DEBUG false
 
 string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
-
+void draw_frame(short x,short y) {
+	short ix = x;
+	SetXY(ix, y);
+	cout << "|";
+	ix++;
+	while (ix != x + 29) {
+		SetXY(ix, y);
+		cout << "-";
+		ix++;
+	}
+	short iy = y;
+	while (iy != y + 6) {
+		SetXY(ix, iy);
+		cout << "|";
+		iy++;
+	}
+	iy--;
+	ix--;
+	while (ix != x) {
+		SetXY(ix, iy);
+		cout << "-";
+		ix--;
+	}
+	while (iy != y - 1) {
+		SetXY(ix, iy);
+		cout << "|";
+		iy--;
+	}
+}
 
 void Game::ShowRecords() {
 		ifstream file("records.txt");
@@ -38,10 +66,16 @@ void Game::ShowRecords() {
 
 	}
 void Game::draw_game(bool first_start=true) {
+	mciSendString(TEXT("stop intro"), NULL, 0, NULL);
+	mciSendString(TEXT("close intro"), NULL, 0, NULL);
+
 	if (first_start) {
 		seed = (clock() * rand()) + (clock() * (rand() + clock()));
 	}
-	 
+	mciSendString(TEXT("open \"hodim.mp3\" type mpegvideo alias hodim"), NULL, 0, NULL);
+	mciSendString(TEXT("play hodim repeat"), NULL, 0, NULL);
+	mciSendStringA("setaudio hodim volume to 700", nullptr, 0, nullptr);
+
 	
 
 	if (first_start) map.generate();
@@ -73,12 +107,14 @@ void Game::draw_game(bool first_start=true) {
 	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
 	 bool needStop = false;
 	 player.canMove = true;
+	 player.ready = true;
 	 while (!needStop) {
 		 if (_kbhit()) {
 			 player.HandleKeyboardEvents();
 		 }
 		 if (emitter["special"]) {
 			 enemy_thread_handler.stopMoving();
+			 player.ready = false;
 			 player.canMove = false;
 			 if (emitter["regen"]) {
 				 current_etage++;
@@ -87,6 +123,7 @@ void Game::draw_game(bool first_start=true) {
 				 clear();
 				 redraw_map(true);
 				 player.canMove = true;
+				 player.ready = true;
 				 enemy_thread_handler.startMoving();
 
 			 }
@@ -98,6 +135,7 @@ void Game::draw_game(bool first_start=true) {
 				 emitter["chest"] = false;
 				 redraw_map(false);
 				 player.canMove = true;
+				 player.ready = true;
 				 enemy_thread_handler.startMoving();
 
 			 }
@@ -107,10 +145,39 @@ void Game::draw_game(bool first_start=true) {
 				 emitter["shop"] = false;
 				 redraw_map(false);
 				 player.canMove = true;
+				 player.ready = true;
 				 enemy_thread_handler.startMoving();
 			 }
 			 else if (emitter["exit"]) {
 				 needStop = true;
+			 }
+			 else if (emitter["inventory"]) {
+				 enemy_thread_handler.stopMoving();
+				 player.canMove = false;
+				 clear();
+				 emitter["special"] = false;
+				 emitter["inventory"] = false;
+				 if (!player.lookinventory) {
+					 redraw_map(false);
+					 player.canMove = true;
+					 player.ready = true;
+					 enemy_thread_handler.startMoving();
+				 }
+				 else {
+					 SetXY(0,0);
+					 cout << "Главные оружия";
+					 draw_frame(0, 1);
+					 draw_frame(0, 8);
+					 draw_frame(0, 16);
+					 SetXY(50, 0);
+					 cout << "Второстепенные предметы";
+					 draw_frame(50, 2);
+					 draw_frame(50, 10);
+					 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					 player.ready = true;
+					 
+
+				 }
 			 }
 		 }
 		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
@@ -119,6 +186,7 @@ void Game::draw_game(bool first_start=true) {
 	 
 	
 	 if (emitter["exit"]) {
+
 		 enemy_thread_handler.stop();
 		 enemy_thread.join();
 		 map.CleanALL();
@@ -243,12 +311,17 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
+		
+		mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
 		setlocale(LC_ALL, "Russian");
+		mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
+		mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
+
 		// Титульник(введение,название игры)
 		SetConsoleTitle(TEXT("Живые клетки"));
 		CONSOLE_CURSOR_INFO     cursorInfo;
 		GetConsoleCursorInfo(hout, &cursorInfo);
-		cursorInfo.bVisible = DEBUG; // set the cursor visibility
+		cursorInfo.bVisible = DEBUG; // видимость курсора
 		SetConsoleCursorInfo(hout, &cursorInfo);
 		
 			cout << start_screen;

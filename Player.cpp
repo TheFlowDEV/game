@@ -1,5 +1,5 @@
-#include "Player.h"
-
+п»ї#include "Player.h"
+#include "locale"
 void Player::Move(Moves move) {
 	pair<int, int>& player_coords = *(this->player_coords);
 	switch (move) {
@@ -145,42 +145,56 @@ void Player::UpdateMap(Map* map_ptr, pair<int, int>* coords) {
 	this->mapGen = map_ptr;
 }
 void Player::HandleKeyboardEvents() {
-	int key;
-	key = _getch();
-	if (canMove) {
-		if (shouldntStop()) {
-			pair<int, int>& player_coords = *(this->player_coords);
-			if (key == 224) {
-				int second_key = _getch();
-				if (second_key == 72) { // стрелка вверх
+	if (ready) {
+		if (canMove) {
+			if (shouldntStop()) {
+				pair<int, int>& player_coords = *(this->player_coords);
+
+				if (GetAsyncKeyState(VK_UP) & 0x8000) { // СЃС‚СЂРµР»РєР° РІРІРµСЂС…
 					Move(UP);
-					
+
 				}
-				else if (second_key == 80) { //стрелка вниз
+				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) { //СЃС‚СЂРµР»РєР° РІРЅРёР·
 					Move(DOWN);
 				}
-				else if (second_key == 75) { // влево
+				else if (GetAsyncKeyState(VK_LEFT) & 0x8000) { // РІР»РµРІРѕ
 					Move(LEFT);
 				}
-				else if (second_key == 77) { // вправо
+				else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) { // РІРїСЂР°РІРѕ
 					Move(RIGHT);
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			}
-			else if (key == 27) {
+			else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) { // РєР»Р°РІРёС€Р° ESC
 				canMove = false;
 				emitter["exit"] = true;
 				emitter["special"] = true;
 			}
+			else if (GetAsyncKeyState(0x49) & 0x8000) {// РєР»Р°РІРёС€Р° I	
+				this->ready = false;
+				lookinventory = true;
+				emitter["inventory"] = true;
+				emitter["special"] = true;
+
+			}
 		}
 
 
+		else if (lookinventory) {
+			if (GetAsyncKeyState(0x49) & 0x8000) { // РєР»Р°РІРёС€Р° I
+				this->ready = false;
+				lookinventory = false;
+				emitter["inventory"] = true;
+				emitter["special"] = true;
+			}
+
+		}
 	}
 
 }
 void Player::GoToBattle() {
 	this->canMove = false;
-	// условие битвы для handleKeyboardEvents и отрисовка её
+	// СѓСЃР»РѕРІРёРµ Р±РёС‚РІС‹ РґР»СЏ handleKeyboardEvents Рё РѕС‚СЂРёСЃРѕРІРєР° РµС‘
 }
 bool Player::shouldntStop() {
 	auto now = std::chrono::steady_clock::now();
@@ -196,7 +210,7 @@ void Player::LevelUp() {
 }
 
 bool Player::EnemyNearThePlayer() {
-	//что вблизи игрока
+	//С‡С‚Рѕ РІР±Р»РёР·Рё РёРіСЂРѕРєР°
 	int x = this->player_coords->first;
 	int y = this->player_coords->second;
 	vector<vector<char>> map = this->mapGen->generated_map;

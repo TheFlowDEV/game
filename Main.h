@@ -13,13 +13,14 @@
 #include "ConsoleFunctions.h"
 #include <mutex>
 std::mutex console_mutex;
+#pragma comment(lib, "Winmm.lib")
 
 enum NXT_ACTIONS{BATTLE,NEXT_ETAGE};
-
+void draw_frame(short x,short y);
 class Game
 {
 private:
-	std::map<string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false}};
+	std::map<string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false},{"inventory",false} };
 	std::map<string, pair<int, int>>coords_emitter{ {"chest",{0,0}}};
 	Player player = Player(console_mutex,emitter,coords_emitter);
 	Map map = Map();
