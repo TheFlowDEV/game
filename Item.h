@@ -36,8 +36,9 @@ class SecondaryWeapon {
 private:
 	ACTIONS type;
 	bool IsDefined;
+	int action_value;
 public:
-	SecondaryWeapon(ACTIONS type);
+	SecondaryWeapon(ACTIONS type,int action_value);
 	SecondaryWeapon();
 	int Use(Player* player);
 	bool AreYouExist();

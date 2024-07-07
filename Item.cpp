@@ -47,9 +47,10 @@ Shield::Shield(bool start) :MainWeapon(SHIELD) {
 	else this->Defense = 2;
 }
 
-SecondaryWeapon::SecondaryWeapon(ACTIONS type) {
+SecondaryWeapon::SecondaryWeapon(ACTIONS type,int action_value) {
 	this->type = type;
 	this->IsDefined = true;
+	this->action_value = action_value;
 }
 SecondaryWeapon::SecondaryWeapon()
 {

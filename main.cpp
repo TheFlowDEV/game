@@ -1,12 +1,9 @@
 ﻿#include "Main.h"
 
-
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
-
 #define DEBUG false
-
-
+HWND window;
 std::string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void draw_frame(short x,short y) {
 	short ix = x;
@@ -248,8 +245,9 @@ void Game::draw_game(bool first_start=true) {
 	 bool needStop = false;
 	 player.canMove = true;
 	 player.ready = true;
+
 	 while (!needStop) {
-		 if (_kbhit()) {
+		 if (_kbhit() && GetForegroundWindow()==window) {
 			 player.HandleKeyboardEvents();
 		 }
 		 if (emitter["special"]) {
@@ -422,6 +420,7 @@ void Game::redraw_start_screen(int choose) {
 		while (StartShouldShow)
 		{
 			if (_kbhit()) {
+				window = GetForegroundWindow();
 				key = _getch();
 				if (key == 224) {
 					int second_key = _getch();
@@ -463,10 +462,8 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-
 		SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 		mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
-		SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 		mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
 		mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
 		// Титульник(введение,название игры)
