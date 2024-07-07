@@ -6,115 +6,120 @@ HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 
 #define DEBUG false
 
-string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
+
+std::string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void draw_frame(short x,short y) {
 	short ix = x;
 	SetXY(ix, y);
-	cout << "|";
+	std::cout << "|";
 	ix++;
 	while (ix != x + 25) {
 		SetXY(ix, y);
-		cout << "-";
+		std::cout << "-";
 		ix++;
 	}
 	short iy = y;
 	while (iy != y + 9) {
 		SetXY(ix, iy);
-		cout << "|";
+		std::cout << "|";
 		iy++;
 	}
 	iy--;
 	ix--;
 	while (ix != x) {
 		SetXY(ix, iy);
-		cout << "-";
+		std::cout << "-";
 		ix--;
 	}
 	while (iy != y - 1) {
 		SetXY(ix, iy);
-		cout << "|";
+		std::cout << "|";
 		iy--;
 	}
 }
-void draw_frame(short x, short y, TYPES type) {
+void draw_frame(short x, short y, MainWeapon* weapon) {
 	draw_frame(x, y);
-	switch (type) {
+	switch (weapon->type) {
 	case BOW: {
 		short x_center = x + 7;
 		short iy = y + 1;
 		while (iy != y + 8) {
 			SetXY(x_center, iy);
-			cout << "|";
+			std::cout << "|";
 			iy++;
 		}
 		iy--;
 		x_center++;
-		cout << "/";
+		std::cout << "/";
 		for (int i = 0; i < 2; i++) {
 			iy--;
 			x_center++;
 			SetXY(x_center, iy);
-			cout << "/";
+			std::cout << "/";
 		}
 		iy--;
 		x_center++;
 		SetXY(x_center, iy);
-		cout << ">";
+		std::cout << ">";
 		for (int i = 0; i < 3; i++) {
 			iy--;
 			x_center--;
 			SetXY(x_center, iy);
-			cout << "\\";
+			std::cout << "\\";
 		}
 		x_center = x + 7;
 		for (int i = 0; i < 3; i++) {
 			x_center++;
 			SetXY(x_center, y + 4);
-			cout << "=";
+			std::cout << "=";
 		}
+		SetXY(x + 16, y + 7);
+		std::cout << weapon->get_description();
 		break;
 	}
 	case SWORD: {
 		short ix = x + 1;
 		short y_center = y + 4;
 		SetXY(ix, y_center);
-		cout << "(";
+		std::cout << "(";
 		ix++;
 		SetXY(ix, y_center);
-		cout << "=";
+		std::cout << "=";
 		for (int i = 0; i < 3; i++) {
 			ix++;
 			SetXY(ix, y_center);
-			cout << "#";
+			std::cout << "#";
 		}
 		ix++;
 		SetXY(ix, y_center);
-		cout << "{";
+		std::cout << "{";
 		SetXY(ix, y_center - 1);
-		cout << ".";
+		std::cout << ".";
 		SetXY(ix, y_center + 1);
-		cout << "`";
+		std::cout << "`";
 		ix++;
 		SetXY(ix, y_center);
-		cout << ">";
+		std::cout << ">";
 		SetXY(ix, y_center - 1);
-		cout << "/";
+		std::cout << "/";
 		SetXY(ix, y_center + 1);
-		cout << "\\";
+		std::cout << "\\";
 		ix++;
 		SetXY(ix, y_center);
-		cout << "=";
+		std::cout << "=";
 		SetXY(ix, y_center - 1);
-		cout << "~";
+		std::cout << "~";
 		SetXY(ix, y_center + 1);
-		cout << "_";
+		std::cout << "_";
 		for (int i = 0; i < 14; i++) {
 			ix++;
 			SetXY(ix, y_center);
-			cout << "=";
+			std::cout << "=";
 		}
 		ix++;
-		cout << "-";
+		std::cout << "-";
+		SetXY(x + 16, y + 7);
+		std::cout << weapon->get_description();
 		break;
 	}
 	case SHIELD:
@@ -122,51 +127,53 @@ void draw_frame(short x, short y, TYPES type) {
 		short x_center = x + 7;
 		short iy = y +1;
 		SetXY(x_center, iy);
-		cout << "_";
+		std::cout << "_";
 		SetXY(x_center - 3, iy);
-		cout << "|";
+		std::cout << "|";
 		SetXY(x_center + 3, iy);
-		cout << "|";
+		std::cout << "|";
 		SetXY(x_center - 1, iy);
-		cout << "_";
+		std::cout << "_";
 		SetXY(x_center + 1, iy);
-		cout << "_";
+		std::cout << "_";
 		SetXY(x_center - 2, iy);
-		cout << "_";
+		std::cout << "_";
 		SetXY(x_center + 2, iy);
-		cout << "_";
+		std::cout << "_";
 		for (int i = 0; i < 3; i++) {
 			SetXY(x_center - 3, iy);
-			cout << "|";
+			std::cout << "|";
 			SetXY(x_center + 3, iy);
-			cout << "|";
+			std::cout << "|";
 			iy++;
 		}
 		SetXY(x_center - 3, iy);
-		cout << "|";
+		std::cout << "|";
 		SetXY(x_center + 3, iy);
-		cout << "|";
+		std::cout << "|";
 		iy++;
 
 		SetXY(x_center - 2, iy);
-		cout << "\\";
+		std::cout << "\\";
 		SetXY(x_center + 2, iy);
-		cout << "/";
+		std::cout << "/";
 		iy++;
 		SetXY(x_center -1, iy);
-		cout << "\\";
+		std::cout << "\\";
 		SetXY(x_center + 1, iy);
-		cout << "/";
+		std::cout << "/";
+		SetXY(x + 15, y + 7);
+		std::cout << weapon->get_description();
 		break;
 	}
 	}
 }
 
 void Game::ShowRecords() {
-		ifstream file("records.txt");
+		std::ifstream file("records.txt");
 		int first_place=0, second_place=0, third_place=0;
 		if (file.is_open()) {
-			string line;
+			std::string line;
 			if (getline(file, line)) first_place = stoi(line);
 			if (getline(file, line)) second_place = stoi(line);
 			if (getline(file, line)) third_place = stoi(line);
@@ -213,31 +220,31 @@ void Game::draw_game(bool first_start=true) {
 			 case 'R':
 				 SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
 				 SetXY(i, j);
-				 cout << map.generated_map[j][i];
+				 std::cout << map.generated_map[j][i];
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
 			 case '.':
 				 SetXY(i, j);
-				 cout << u8'.';
+				 std::cout << '.';
 				 break;
 			 case '#':
 				 SetXY(i, j);
-				 cout << u8"▒";
+				 std::cout << u8"▒";
 				 break;
 			 default:
 				 SetXY(i, j);
-				 cout << map.generated_map[j][i];
+				 std::cout << map.generated_map[j][i];
 				 break;
 			 }
 		 }
 	 }
-	 pair<int, int> player_coords;
+	 std::pair<int, int> player_coords;
 	 
 	 player_coords = map.spawn_player();
 	 player.UpdateMap(&map, &player_coords); 
 	 
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
-	 thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
+	 std::thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
 	 bool needStop = false;
 	 player.canMove = true;
 	 player.ready = true;
@@ -298,12 +305,12 @@ void Game::draw_game(bool first_start=true) {
 				 }
 				 else {
 					 SetXY(0,0);
-					 cout << u8"Главные оружия";
-					 draw_frame(0, 1,player.first_weapon->type);
-					 draw_frame(0, 10, player.second_weapon->type);
-					 draw_frame(0, 19, player.third_weapon->type);
+					 std::cout << u8"Главные оружия";
+					 draw_frame(0, 1,player.first_weapon);
+					 draw_frame(0, 10, player.second_weapon);
+					 draw_frame(0, 19, player.third_weapon);
 					 SetXY(50, 0);
-					 cout << u8"Второстепенные предметы";
+					 std::cout << u8"Второстепенные предметы";
 					 draw_frame(50, 2);
 					 draw_frame(50, 11);
 					 std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -339,24 +346,24 @@ void Game::redraw_map(bool regenerate) {
 			case 'R':
 				SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
 				SetXY(i, j);
-				cout << map.generated_map[j][i];
+				std::cout << map.generated_map[j][i];
 				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
 			case '.':
 				SetXY(i, j);
-				cout << '.';
+				std::cout << '.';
 				break;
 			case 'P':
 				SetXY(i, j);
-				cout << u8"\u263A";
+				std::cout << u8"\u263A";
 				break;
 			case '#':
 				SetXY(i, j);
-				cout << u8"▒";
+				std::cout << u8"▒";
 				break;
 			default:
 				SetXY(i, j);
-				cout << map.generated_map[j][i];
+				std::cout << map.generated_map[j][i];
 				break;
 			}
 		}
@@ -469,7 +476,7 @@ void Game::redraw_start_screen(int choose) {
 		cursorInfo.bVisible = DEBUG; // видимость курсора
 		SetConsoleCursorInfo(hout, &cursorInfo);
 		
-			cout << start_screen;
+			std::cout << start_screen;
 			Sleep(1000);
 			clear();
 			// МЕНЮ

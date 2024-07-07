@@ -13,7 +13,7 @@ private:
     bool stopMoving_cond=false;
 public:
     EnemyThreadHandler(Map* mapgen, std::mutex& console_mutexss);
-    void handle_enemies(pair<int, int>& ptr_to_player_coords);
+    void handle_enemies(std::pair<int, int>& ptr_to_player_coords);
     void stop();
     void stopMoving();
     void startMoving();

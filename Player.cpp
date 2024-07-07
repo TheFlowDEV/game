@@ -1,7 +1,7 @@
 ﻿#include "Player.h"
 #include "locale"
 void Player::Move(Moves move) {
-	pair<int, int>& player_coords = *(this->player_coords);
+	std::pair<int, int>& player_coords = *(this->player_coords);
 	switch (move) {
 	case UP:
 		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second - 1][player_coords.first] == '.') {
@@ -9,12 +9,12 @@ void Player::Move(Moves move) {
 			console_mutex.lock();
 			SetXY(player_coords.first, player_coords.second);
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-			cout << '.';
+			std::cout << '.';
 
 			SetXY(player_coords.first, player_coords.second - 1);
 			player_coords.second -= 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << u8"\u263A";
+			std::cout << u8"\u263A";
 			console_mutex.unlock();
 		}
 		else {
@@ -41,11 +41,11 @@ void Player::Move(Moves move) {
 			console_mutex.lock();
 			SetXY(player_coords.first, player_coords.second);
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-			cout << '.';
+			std::cout << '.';
 			SetXY(player_coords.first, player_coords.second + 1);
 			player_coords.second += 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << u8"\u263A";
+			std::cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -74,11 +74,11 @@ void Player::Move(Moves move) {
 			console_mutex.lock();
 			SetXY(player_coords.first, player_coords.second);
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-			cout << '.';
+			std::cout << '.';
 			SetXY(player_coords.first - 1, player_coords.second);
 			player_coords.first -= 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << u8"\u263A";
+			std::cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -106,12 +106,12 @@ void Player::Move(Moves move) {
 			console_mutex.lock();
 			SetXY(player_coords.first, player_coords.second);
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
-			cout << '.';
+			std::cout << '.';
 			player_coords.first += 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
 			SetXY(player_coords.first, player_coords.second);
-			cout << u8"\u263A";
+			std::cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -137,7 +137,7 @@ void Player::Move(Moves move) {
 	}
 }
 
-Player::Player(mutex& mutexss, std::map<string, bool>& emit,std::map<string,pair<int,int>>& coords_emit) :console_mutex(mutexss), emitter(emit),coords_emitter(coords_emit) {
+Player::Player(std::mutex& mutexss, std::map<std::string, bool>& emit,std::map<std::string,std::pair<int,int>>& coords_emit) :console_mutex(mutexss), emitter(emit),coords_emitter(coords_emit) {
 	Weapon* sword = new Weapon(SWORD, true);
 	first_weapon=(sword);
 	Weapon* bow = new Weapon(BOW, true);
@@ -145,7 +145,7 @@ Player::Player(mutex& mutexss, std::map<string, bool>& emit,std::map<string,pair
 	Shield* shield = new Shield(true);
 	third_weapon = (shield);
 }
-void Player::UpdateMap(Map* map_ptr, pair<int, int>* coords) {
+void Player::UpdateMap(Map* map_ptr, std::pair<int, int>* coords) {
 	this->player_coords = coords;
 	this->mapGen = map_ptr;
 }
@@ -153,7 +153,7 @@ void Player::HandleKeyboardEvents() {
 	if (ready) {
 		if (canMove) {
 			if (shouldntStop()) {
-				pair<int, int>& player_coords = *(this->player_coords);
+				std::pair<int, int>& player_coords = *(this->player_coords);
 
 				if (GetAsyncKeyState(VK_UP) & 0x8000) { // стрелка вверх
 					Move(UP);
@@ -218,7 +218,7 @@ bool Player::EnemyNearThePlayer() {
 	//что вблизи игрока
 	int x = this->player_coords->first;
 	int y = this->player_coords->second;
-	vector<vector<char>> map = this->mapGen->generated_map;
+	std::vector<std::vector<char>> map = this->mapGen->generated_map;
 	char l_object=map[y][x-1], d_object = map[y+1][x], u_object =map[y-1][x], r_object = map[y][x+1];
 	if (l_object == 'E' || d_object == 'E' || r_object == 'E' || u_object == 'E') return true;
 	return false;

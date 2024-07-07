@@ -1,4 +1,5 @@
 #include "Item.h"
+#include <string>
 MainWeapon::MainWeapon(TYPES type) {
 	this->type = type;
 }
@@ -10,6 +11,12 @@ std::pair<TYPES,int> Weapon::Use() {
 std::pair<TYPES, int> Shield::Use() {
 	std::pair<TYPES, int> ans = { this->type,this->Defense};
 	return ans;
+}
+std::string Weapon::get_description() {
+	return u8"Атака:"+std::to_string(this->Damage);
+}
+std::string Shield::get_description() {
+	return u8"Защита:"+ std::to_string(this->Defense);
 }
 int MainWeapon::GET_CLASS()
 {

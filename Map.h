@@ -21,7 +21,6 @@ const int MAX_EXIT_NUMBER = 1;
 const int MAX_CHEST_NUMBER = 4;
 const short MAX_ENEMY_NUMBER = 15;
 
-using namespace std;
 
 
 
@@ -40,17 +39,17 @@ struct BSPNode {
 
 class Room {
 private:
-    vector<Enemy*> enemies;
-    pair<int, int> chest;
-    pair<int, int> exit;
+    std::vector<Enemy*> enemies;
+    std::pair<int, int> chest;
+    std::pair<int, int> exit;
     BSPNode* node;
 
 public:
     Room(BSPNode* node);
-    void generate(bool exit, bool chest, bool enemy, vector<vector<char>>* map);
-    vector<Enemy*>* get_enemies();
-    pair<int, int> get_chest();
-    pair<int, int> get_exit();
+    void generate(bool exit, bool chest, bool enemy, std::vector<std::vector<char>>* map);
+    std::vector<Enemy*>* get_enemies();
+    std::pair<int, int> get_chest();
+    std::pair<int, int> get_exit();
     BSPNode* get_node();
 };
 
@@ -62,25 +61,25 @@ private:
     BSPNode* root_node;
     bool shop_exists = false;
     float chest_veroyatnost = 5.25, enemy_veroyatnost = 1.25, exit_veroyatnost = 1, shop_veroyatnost = 2.5;   
-    vector<Room*> rooms;
-    vector<BSPNode*> nodes_of_rooms;
+    std::vector<Room*> rooms;
+    std::vector<BSPNode*> nodes_of_rooms;
     short exits_number = 0;
     short chests_number = 0;
     short enemies_number = 0;
-    vector<vector<char>> generated_map;
+    std::vector<std::vector<char>> generated_map;
     int map_width, map_height;
     void connectRooms(BSPNode* node, std::vector<std::vector<char>>& map);
     void drawRooms(BSPNode* node, std::vector<std::vector<char>>& map);
     BSPNode* getLeafRoom(BSPNode* node);
     bool split(BSPNode* node, int minRoomSize);
     void createRooms(BSPNode* node, int minRoomSize, int maxRoomSize);
-    void CreateRoomContents(vector<vector<char>>& map);
+    void CreateRoomContents(std::vector<std::vector<char>>& map);
     void DeleteBSPNode (BSPNode* node);
 public:
     Map();
     void CleanALL();
     void generate(bool regenerate=false);
-    pair<int, int> spawn_player();
+    std::pair<int, int> spawn_player();
     
 };
 

@@ -14,12 +14,11 @@
 #include "ConsoleFunctions.h"
 #include "Enemy.h"
 enum Moves{UP,DOWN,LEFT,RIGHT};
-using namespace std;
 class Player {
 private:
 	Map* mapGen;
-	std::map<string, bool>& emitter;
-	std::map<string, pair<int, int>>& coords_emitter;
+	std::map<std::string, bool>& emitter;
+	std::map<std::string, std::pair<int, int>>& coords_emitter;
 
 	MainWeapon* first_weapon;
 	MainWeapon* second_weapon;
@@ -46,21 +45,21 @@ private:
 	
 public:
 	friend class Game;
-	pair<int, int>* player_coords;
+	std::pair<int, int>* player_coords;
 	bool ready = false;
 	bool canMove=true;
 	bool battlemode = false;
 	bool lookinventory = false;
 	bool chest_mode = false;
 
-	Player(std::mutex &mutexss,std::map<string,bool>& emit,std::map<string,pair<int,int>>& coords_emit);
-	void UpdateMap(Map* map_ptr, pair<int, int>* coords);
+	Player(std::mutex &mutexss,std::map<std::string,bool>& emit,std::map<std::string,std::pair<int,int>>& coords_emit);
+	void UpdateMap(Map* map_ptr, std::pair<int, int>* coords);
 	void HandleKeyboardEvents();
 	void GoToBattle();
 	void LevelUp();
 	bool EnemyNearThePlayer();
-	vector<MainWeapon> get_inv_weapons();
-	vector<SecondaryWeapon> get_inv_secweapons();
+	std::vector<MainWeapon> get_inv_weapons();
+	std::vector<SecondaryWeapon> get_inv_secweapons();
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };

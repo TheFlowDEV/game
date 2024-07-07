@@ -1,14 +1,14 @@
 #include "Enemy.h"
 #include "Item.h"
 #include "Map.h"
-Enemy::Enemy(pair<int, int> coords, vector<vector<char>>* map, BSPNode* room) {
+Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room) {
     *(this->coords) = coords;
     this->map = map;
     this->room = room;
     this->type = static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
 }
-pair<int, int> Enemy::Move(pair<int, int>& player_coords) {
-    pair<int, int>& coords = *(this->coords);
+std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
+    std::pair<int, int>& coords = *(this->coords);
     // нужно проверить видимость игрока в пределах комнаты
     if ((player_coords.first >= room->x + 1) && (player_coords.first <= room->x + room->width - 1) && (player_coords.second >= room->y - 1) && (player_coords.second <= room->y + room->height + 1))
     {
@@ -51,7 +51,7 @@ pair<int, int> Enemy::Move(pair<int, int>& player_coords) {
 
 
 }
-pair<int, int> Enemy::get_coords() { return *(this->coords); }
+std::pair<int, int> Enemy::get_coords() { return *(this->coords); }
 Enemy::~Enemy() {
     delete coords;
 }

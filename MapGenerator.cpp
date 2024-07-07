@@ -2,7 +2,6 @@
 #include "Enemy.h"
 
 
-using namespace std;
 
 
 
@@ -14,7 +13,7 @@ using namespace std;
 Room::Room(BSPNode* node) {
         this->node = node;
     }
-void Room::generate(bool exit, bool chest, bool enemy,vector<vector<char>> *map)
+void Room::generate(bool exit, bool chest, bool enemy,std::vector<std::vector<char>> *map)
     {
         if (exit) {
             this->exit.first = rand() % (node->width-1 ) + node->x+1;
@@ -29,13 +28,13 @@ void Room::generate(bool exit, bool chest, bool enemy,vector<vector<char>> *map)
         }
         
         if (enemy) {
-            pair<int, int> enemy_coords;
+            std::pair<int, int> enemy_coords;
             enemy_coords.first = rand() % (node->width - 1) + node->x + 1;
             enemy_coords.second = rand() % (node->height - 1) + node->y + 1;
             Enemy* enemy = new Enemy(enemy_coords, map, this->node);
             enemies.push_back(enemy);
             if (rand() % 4 == 3) {
-                pair<int, int> enemy2_coords;
+                std::pair<int, int> enemy2_coords;
                 enemy2_coords.first = rand() % (node->width - 1) + node->x + 1;
                 enemy2_coords.second = rand() % (node->height - 1) + node->y + 1;
                 
@@ -49,9 +48,9 @@ void Room::generate(bool exit, bool chest, bool enemy,vector<vector<char>> *map)
         
 
     }
-vector<Enemy*>* Room::get_enemies() { return &this->enemies; }
-pair<int, int> Room::get_chest() { return this->chest; }
-pair<int, int> Room::get_exit() { return this->exit; }
+std::vector<Enemy*>* Room::get_enemies() { return &this->enemies; }
+std::pair<int, int> Room::get_chest() { return this->chest; }
+std::pair<int, int> Room::get_exit() { return this->exit; }
 BSPNode* Room::get_node() { return this->node; }
 
 
@@ -177,7 +176,7 @@ void Map::createRooms(BSPNode* node, int minRoomSize, int maxRoomSize) {
             if (node->right) createRooms(node->right, minRoomSize, maxRoomSize);
         }
     }
-void Map::CreateRoomContents(vector<vector<char>>& map) {
+void Map::CreateRoomContents(std::vector<std::vector<char>>& map) {
         rooms.push_back(new Room(nodes_of_rooms[0]));
 
         for (int i = 1; i < nodes_of_rooms.size();i++) {
@@ -195,21 +194,21 @@ void Map::CreateRoomContents(vector<vector<char>>& map) {
                 if (this->exits_number < MAX_EXIT_NUMBER) {
                     if ( ((rand() % static_cast<int>((exit_veroyatnost * 2))) == 0) || this->exits_number==0) { exit = true; this->exits_number++; }
                 }
-                vector<vector<char>>* map_ptr = &generated_map;
+                std::vector<std::vector<char>>* map_ptr = &generated_map;
                 if (!chest && !enemy && !exit) {
                     //Спецкомната
                     if ((rand() % static_cast<int>(shop_veroyatnost * 2) == 0)&&!shop_exists) { map[node->y + node->height / 2][node->x + node->width / 2] = 'S'; shop_exists = true; }
                 }
                 else room->generate(exit, chest, enemy,map_ptr);
                 rooms.push_back(room);
-                pair<int, int> exit_coords = room->get_exit();
-                pair<int, int> chest_coords = room->get_chest();
-                vector<Enemy*>* enemies = room->get_enemies();
+                std::pair<int, int> exit_coords = room->get_exit();
+                std::pair<int, int> chest_coords = room->get_chest();
+                std::vector<Enemy*>* enemies = room->get_enemies();
                 if (exit_coords.first!=0 && exit_coords.second!=0) map[exit_coords.second][exit_coords.first] = 'R';
                 if (chest_coords.first!=0 && chest_coords.second!=0) map[chest_coords.second][chest_coords.first] = '$';
                 for (auto& enemy : (*enemies)) {
 
-                    pair<int, int> enemy_coord = (*enemy).get_coords();
+                    std::pair<int, int> enemy_coord = (*enemy).get_coords();
                     if (enemy_coord.first != 0 && enemy_coord.second != 0) {
                         if (map[enemy_coord.second][enemy_coord.first] == 'R') {
                             enemy_coord.second++;
@@ -250,7 +249,7 @@ void Map::generate(bool regenerate) {
         CleanALL();
      }
         srand(static_cast<unsigned>(time(nullptr)));
-        vector<vector<char>> map(MAX_MAP_HEIGHT, vector<char>(MAX_MAP_WIDTH, '#'));
+        std::vector<std::vector<char>> map(MAX_MAP_HEIGHT, std::vector<char>(MAX_MAP_WIDTH, '#'));
         BSPNode* root = new BSPNode(0, 0, MAX_MAP_WIDTH, MAX_MAP_HEIGHT);
         root_node = root;
         split(root, minRoomSize);
@@ -273,11 +272,11 @@ void Map::DeleteBSPNode(BSPNode* node) {
     delete node;
 }
 
-pair<int, int> Map::spawn_player() {
+std::pair<int, int> Map::spawn_player() {
         BSPNode* node = nodes_of_rooms[0];
-        pair<int, int> player_coords = { node->x + node->width / 2,node->y + node->height / 2 };
+        std::pair<int, int> player_coords = { node->x + node->width / 2,node->y + node->height / 2 };
         SetXY(player_coords.first, player_coords.second);
-        cout << u8"\u263A";
+        std::cout << u8"\u263A";
         generated_map[player_coords.second][player_coords.first] = 'P';
         return player_coords;
     }
