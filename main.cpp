@@ -1,23 +1,24 @@
 ﻿#include "Main.h"
 
+
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 
 #define DEBUG false
 
-string start_screen = "*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
+string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void draw_frame(short x,short y) {
 	short ix = x;
 	SetXY(ix, y);
 	cout << "|";
 	ix++;
-	while (ix != x + 29) {
+	while (ix != x + 25) {
 		SetXY(ix, y);
 		cout << "-";
 		ix++;
 	}
 	short iy = y;
-	while (iy != y + 6) {
+	while (iy != y + 9) {
 		SetXY(ix, iy);
 		cout << "|";
 		iy++;
@@ -35,6 +36,131 @@ void draw_frame(short x,short y) {
 		iy--;
 	}
 }
+void draw_frame(short x, short y, TYPES type) {
+	draw_frame(x, y);
+	switch (type) {
+	case BOW: {
+		short x_center = x + 7;
+		short iy = y + 1;
+		while (iy != y + 8) {
+			SetXY(x_center, iy);
+			cout << "|";
+			iy++;
+		}
+		iy--;
+		x_center++;
+		cout << "/";
+		for (int i = 0; i < 2; i++) {
+			iy--;
+			x_center++;
+			SetXY(x_center, iy);
+			cout << "/";
+		}
+		iy--;
+		x_center++;
+		SetXY(x_center, iy);
+		cout << ">";
+		for (int i = 0; i < 3; i++) {
+			iy--;
+			x_center--;
+			SetXY(x_center, iy);
+			cout << "\\";
+		}
+		x_center = x + 7;
+		for (int i = 0; i < 3; i++) {
+			x_center++;
+			SetXY(x_center, y + 4);
+			cout << "=";
+		}
+		break;
+	}
+	case SWORD: {
+		short ix = x + 1;
+		short y_center = y + 4;
+		SetXY(ix, y_center);
+		cout << "(";
+		ix++;
+		SetXY(ix, y_center);
+		cout << "=";
+		for (int i = 0; i < 3; i++) {
+			ix++;
+			SetXY(ix, y_center);
+			cout << "#";
+		}
+		ix++;
+		SetXY(ix, y_center);
+		cout << "{";
+		SetXY(ix, y_center - 1);
+		cout << ".";
+		SetXY(ix, y_center + 1);
+		cout << "`";
+		ix++;
+		SetXY(ix, y_center);
+		cout << ">";
+		SetXY(ix, y_center - 1);
+		cout << "/";
+		SetXY(ix, y_center + 1);
+		cout << "\\";
+		ix++;
+		SetXY(ix, y_center);
+		cout << "=";
+		SetXY(ix, y_center - 1);
+		cout << "~";
+		SetXY(ix, y_center + 1);
+		cout << "_";
+		for (int i = 0; i < 14; i++) {
+			ix++;
+			SetXY(ix, y_center);
+			cout << "=";
+		}
+		ix++;
+		cout << "-";
+		break;
+	}
+	case SHIELD:
+	{
+		short x_center = x + 7;
+		short iy = y +1;
+		SetXY(x_center, iy);
+		cout << "_";
+		SetXY(x_center - 3, iy);
+		cout << "|";
+		SetXY(x_center + 3, iy);
+		cout << "|";
+		SetXY(x_center - 1, iy);
+		cout << "_";
+		SetXY(x_center + 1, iy);
+		cout << "_";
+		SetXY(x_center - 2, iy);
+		cout << "_";
+		SetXY(x_center + 2, iy);
+		cout << "_";
+		for (int i = 0; i < 3; i++) {
+			SetXY(x_center - 3, iy);
+			cout << "|";
+			SetXY(x_center + 3, iy);
+			cout << "|";
+			iy++;
+		}
+		SetXY(x_center - 3, iy);
+		cout << "|";
+		SetXY(x_center + 3, iy);
+		cout << "|";
+		iy++;
+
+		SetXY(x_center - 2, iy);
+		cout << "\\";
+		SetXY(x_center + 2, iy);
+		cout << "/";
+		iy++;
+		SetXY(x_center -1, iy);
+		cout << "\\";
+		SetXY(x_center + 1, iy);
+		cout << "/";
+		break;
+	}
+	}
+}
 
 void Game::ShowRecords() {
 		ifstream file("records.txt");
@@ -46,7 +172,7 @@ void Game::ShowRecords() {
 			if (getline(file, line)) third_place = stoi(line);
 		}
 		SetXY(0, 0);
-		std::cout << "Рекорды";
+		std::cout << u8"Рекорды";
 		SetXY(0, 1);
 		std::cout << "1." << first_place;
 		SetXY(0, 2);
@@ -55,7 +181,7 @@ void Game::ShowRecords() {
 		std::cout << "3."<<third_place;
 		SetXY(0, 5);
 		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
-		std::cout << "Выход";
+		std::cout << u8"Выход";
 		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		while (true) {
 			if (_kbhit()) {
@@ -90,7 +216,14 @@ void Game::draw_game(bool first_start=true) {
 				 cout << map.generated_map[j][i];
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-
+			 case '.':
+				 SetXY(i, j);
+				 cout << u8'.';
+				 break;
+			 case '#':
+				 SetXY(i, j);
+				 cout << u8"▒";
+				 break;
 			 default:
 				 SetXY(i, j);
 				 cout << map.generated_map[j][i];
@@ -165,14 +298,14 @@ void Game::draw_game(bool first_start=true) {
 				 }
 				 else {
 					 SetXY(0,0);
-					 cout << "Главные оружия";
-					 draw_frame(0, 1);
-					 draw_frame(0, 8);
-					 draw_frame(0, 16);
+					 cout << u8"Главные оружия";
+					 draw_frame(0, 1,player.first_weapon->type);
+					 draw_frame(0, 10, player.second_weapon->type);
+					 draw_frame(0, 19, player.third_weapon->type);
 					 SetXY(50, 0);
-					 cout << "Второстепенные предметы";
+					 cout << u8"Второстепенные предметы";
 					 draw_frame(50, 2);
-					 draw_frame(50, 10);
+					 draw_frame(50, 11);
 					 std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					 player.ready = true;
 					 
@@ -207,9 +340,20 @@ void Game::redraw_map(bool regenerate) {
 				SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
 				SetXY(i, j);
 				cout << map.generated_map[j][i];
-				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15)); 
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
-
+			case '.':
+				SetXY(i, j);
+				cout << '.';
+				break;
+			case 'P':
+				SetXY(i, j);
+				cout << u8"\u263A";
+				break;
+			case '#':
+				SetXY(i, j);
+				cout << u8"▒";
+				break;
 			default:
 				SetXY(i, j);
 				cout << map.generated_map[j][i];
@@ -217,6 +361,7 @@ void Game::redraw_map(bool regenerate) {
 			}
 		}
 	}
+
 	
 }
 void Game::redraw_start_screen(int choose) {
@@ -226,31 +371,31 @@ void Game::redraw_start_screen(int choose) {
 		case 0:
 			SetXY(0, 0);
 			SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
-			std::cout << "1.СТАРТ";
+			std::cout << u8"1.СТАРТ";
 			SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 			SetXY(0, 1);
-			std::cout << "2.ТАБЛИЦА РЕКОРДОВ";
+			std::cout << u8"2.ТАБЛИЦА РЕКОРДОВ";
 			SetXY(0, 2);
-			std::cout << "3.ВЫХОД";
+			std::cout << u8"3.ВЫХОД";
 			break;
 		case 1:
 			SetXY(0, 0);
-			std::cout << "1.СТАРТ";
+			std::cout << u8"1.СТАРТ";
 			SetXY(0, 1);
 			SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
-			std::cout << "2.ТАБЛИЦА РЕКОРДОВ";
+			std::cout << u8"2.ТАБЛИЦА РЕКОРДОВ";
 			SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 			SetXY(0, 2);
-			std::cout << "3.ВЫХОД";
+			std::cout << u8"3.ВЫХОД";
 			break;
 		case 2:
 			SetXY(0, 0);
-			std::cout << "1.СТАРТ";
+			std::cout << u8"1.СТАРТ";
 			SetXY(0, 1);
-			std::cout << "2.ТАБЛИЦА РЕКОРДОВ";
+			std::cout << u8"2.ТАБЛИЦА РЕКОРДОВ";
 			SetXY(0, 2);
 			SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
-			std::cout << "3.ВЫХОД";
+			std::cout << u8"3.ВЫХОД";
 			break;
 		}
 	}
@@ -258,12 +403,12 @@ void Game::redraw_start_screen(int choose) {
 	void Game::draw_start_screen() {
 		SetXY(0, 0);
 		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
-		std::cout << "1.СТАРТ";
+		std::cout << u8"1.СТАРТ";
 		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		SetXY(0, 1);
-		std::cout << "2.ТАБЛИЦА РЕКОРДОВ";
+		std::cout << u8"2.ТАБЛИЦА РЕКОРДОВ";
 		SetXY(0, 2);
-		std::cout << "3.ВЫХОД";
+		std::cout << u8"3.ВЫХОД";
 		int choose = 0;
 		int key;
 		bool StartShouldShow = true;
@@ -311,12 +456,12 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-		
+
+		SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 		mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
-		setlocale(LC_ALL, "Russian");
+		SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 		mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
 		mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
-
 		// Титульник(введение,название игры)
 		SetConsoleTitle(TEXT("Живые клетки"));
 		CONSOLE_CURSOR_INFO     cursorInfo;

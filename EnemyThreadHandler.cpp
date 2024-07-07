@@ -1,4 +1,4 @@
-#include "Enemy_Thread_Handler.h"
+﻿#include "Enemy_Thread_Handler.h"
 #include "Enemy.h"
 
 EnemyThreadHandler::EnemyThreadHandler(Map* mapgen,std::mutex& console_mutexss):console_mutex(console_mutexss) {
@@ -22,7 +22,7 @@ void EnemyThreadHandler::handle_enemies(pair<int, int>& ptr_to_player_coords) {
                         cout << '.';
                         SetXY(new_coords.first, new_coords.second);
                         map[new_coords.second][new_coords.first] = 'E';
-                        cout << 'E';
+                        cout << "E";
                         console_mutex.unlock();
                     }
                 }

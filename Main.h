@@ -17,6 +17,7 @@ std::mutex console_mutex;
 
 enum NXT_ACTIONS{BATTLE,NEXT_ETAGE};
 void draw_frame(short x,short y);
+void draw_frame(short x, short y,TYPES type);
 class Game
 {
 private:

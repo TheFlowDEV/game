@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <map>
@@ -21,9 +21,9 @@ private:
 	std::map<string, bool>& emitter;
 	std::map<string, pair<int, int>>& coords_emitter;
 
-	MainWeapon first_weapon;
-	MainWeapon second_weapon;
-	MainWeapon third_weapon;
+	MainWeapon* first_weapon;
+	MainWeapon* second_weapon;
+	MainWeapon* third_weapon;
 	SecondaryWeapon fs_weapon;
 	SecondaryWeapon ss_weapon;
 	
@@ -34,9 +34,9 @@ private:
 
 	int level = 0;
 
-	int attack = 5;// атака
-	int defense = 5; // защита
-	int dexterity = 5; // ловкость
+	int attack = 5;// Р°С‚Р°РєР°
+	int defense = 5; // Р·Р°С‰РёС‚Р°
+	int dexterity = 5; // Р»РѕРІРєРѕСЃС‚СЊ
 
 	std::mutex& console_mutex;
 	float move_interval=0.12f;
@@ -45,6 +45,7 @@ private:
 	void Move(Moves move);
 	
 public:
+	friend class Game;
 	pair<int, int>* player_coords;
 	bool ready = false;
 	bool canMove=true;
@@ -58,6 +59,8 @@ public:
 	void GoToBattle();
 	void LevelUp();
 	bool EnemyNearThePlayer();
+	vector<MainWeapon> get_inv_weapons();
+	vector<SecondaryWeapon> get_inv_secweapons();
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };

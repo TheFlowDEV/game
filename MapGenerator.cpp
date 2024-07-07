@@ -277,7 +277,7 @@ pair<int, int> Map::spawn_player() {
         BSPNode* node = nodes_of_rooms[0];
         pair<int, int> player_coords = { node->x + node->width / 2,node->y + node->height / 2 };
         SetXY(player_coords.first, player_coords.second);
-        cout << 'P';
+        cout << u8"\u263A";
         generated_map[player_coords.second][player_coords.first] = 'P';
         return player_coords;
     }

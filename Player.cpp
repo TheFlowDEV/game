@@ -14,7 +14,7 @@ void Player::Move(Moves move) {
 			SetXY(player_coords.first, player_coords.second - 1);
 			player_coords.second -= 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << 'P';
+			cout << u8"\u263A";
 			console_mutex.unlock();
 		}
 		else {
@@ -45,7 +45,7 @@ void Player::Move(Moves move) {
 			SetXY(player_coords.first, player_coords.second + 1);
 			player_coords.second += 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << 'P';
+			cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -78,7 +78,7 @@ void Player::Move(Moves move) {
 			SetXY(player_coords.first - 1, player_coords.second);
 			player_coords.first -= 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			cout << 'P';
+			cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -111,7 +111,7 @@ void Player::Move(Moves move) {
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
 			SetXY(player_coords.first, player_coords.second);
-			cout << 'P';
+			cout << u8"\u263A";
 			console_mutex.unlock();
 
 		}
@@ -138,7 +138,12 @@ void Player::Move(Moves move) {
 }
 
 Player::Player(mutex& mutexss, std::map<string, bool>& emit,std::map<string,pair<int,int>>& coords_emit) :console_mutex(mutexss), emitter(emit),coords_emitter(coords_emit) {
-	
+	Weapon* sword = new Weapon(SWORD, true);
+	first_weapon=(sword);
+	Weapon* bow = new Weapon(BOW, true);
+	second_weapon = (bow);
+	Shield* shield = new Shield(true);
+	third_weapon = (shield);
 }
 void Player::UpdateMap(Map* map_ptr, pair<int, int>* coords) {
 	this->player_coords = coords;
