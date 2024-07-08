@@ -22,7 +22,10 @@ void EnemyThreadHandler::handle_enemies(std::pair<int, int>& ptr_to_player_coord
                         std::cout << '.';
                         SetXY(new_coords.first, new_coords.second);
                         map[new_coords.second][new_coords.first] = 'E';
-                        std::cout << "E";
+                        SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+                        std::cout << u8"🕱";
+                        SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+
                         console_mutex.unlock();
                     }
                 }

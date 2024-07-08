@@ -278,13 +278,29 @@ void Game::draw_game(bool first_start=true) {
 				 std::cout << map.generated_map[j][i];
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-			 case '.':
+			 case '$':
 				 SetXY(i, j);
-				 std::cout << '.';
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 14));
+				 std::cout << '$';
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 break;
+			 case 'S':
+				 SetXY(i, j);
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 3));
+				 std::cout << "S";
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
 			 case '#':
 				 SetXY(i, j);
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 8));
 				 std::cout << u8"▒";
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 break;
+			 case 'E':
+				 SetXY(i, j);
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+				 std::cout << u8"🕱";
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
 			 default:
 				 SetXY(i, j);
@@ -297,7 +313,12 @@ void Game::draw_game(bool first_start=true) {
 	 
 	 player_coords = map.spawn_player();
 	 player.UpdateMap(&map, &player_coords); 
-	 
+	 SetXY(0, map.map_height + 1);
+	 std::stringstream HUD;
+	 HUD << u8"ИНВЕНТАРЬ[I] ";
+	 HUD << u8"АТК/ЛВК/ЗАЩ:" << player.attack << "/" << player.dexterity << "/" << player.defense << " ";
+	 HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money;
+	 std::cout << HUD.str();
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
 	 std::thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
 	 bool needStop = false;
@@ -405,17 +426,33 @@ void Game::redraw_map(bool regenerate) {
 				std::cout << map.generated_map[j][i];
 				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
-			case '.':
+			case '$':
 				SetXY(i, j);
-				std::cout << '.';
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 14));
+				std::cout << '$';
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				break;
+			case 'S':
+				SetXY(i, j);
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 3));
+				std::cout <<"S";
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
 			case 'P':
 				SetXY(i, j);
 				std::cout << u8"\u263A";
 				break;
+			case 'E':
+				SetXY(i, j);
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+				std::cout << u8"🕱";
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				break;
 			case '#':
 				SetXY(i, j);
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 8));
 				std::cout << u8"▒";
+				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
 			default:
 				SetXY(i, j);
@@ -423,6 +460,12 @@ void Game::redraw_map(bool regenerate) {
 				break;
 			}
 		}
+		SetXY(0, map.map_height + 1);
+		std::stringstream HUD;
+		HUD << u8"ИНВЕНТАРЬ[I] ";
+		HUD << u8"АТК/ЛВК/ЗАЩ:" << player.attack << "/" << player.dexterity << "/" << player.defense << " ";
+		HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money;
+		std::cout << HUD.str();
 	}
 
 	
