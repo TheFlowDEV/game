@@ -58,8 +58,6 @@ public:
 	void GoToBattle();
 	void LevelUp();
 	bool EnemyNearThePlayer();
-	std::vector<MainWeapon> get_inv_weapons();
-	std::vector<SecondaryWeapon> get_inv_secweapons();
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };

@@ -56,3 +56,6 @@ SecondaryWeapon::SecondaryWeapon()
 {
 	this->IsDefined = false;
 }
+bool SecondaryWeapon::AreYouExist() {
+	return this->IsDefined;
+}

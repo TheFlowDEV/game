@@ -34,10 +34,10 @@ public:
 };
 class SecondaryWeapon {
 private:
-	ACTIONS type;
 	bool IsDefined;
-	int action_value;
 public:
+	int action_value;
+	ACTIONS type;
 	SecondaryWeapon(ACTIONS type,int action_value);
 	SecondaryWeapon();
 	int Use(Player* player);

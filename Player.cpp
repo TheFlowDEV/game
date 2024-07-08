@@ -137,9 +137,9 @@ void Player::Move(Moves move) {
 	}
 }
 
-Player::Player(std::mutex& mutexss, std::map<std::string, bool>& emit,std::map<std::string,std::pair<int,int>>& coords_emit) :console_mutex(mutexss), emitter(emit),coords_emitter(coords_emit) {
+Player::Player(std::mutex& mutexss, std::map<std::string, bool>& emit, std::map<std::string, std::pair<int, int>>& coords_emit) :console_mutex(mutexss), emitter(emit), coords_emitter(coords_emit) {
 	Weapon* sword = new Weapon(SWORD, true);
-	first_weapon=(sword);
+	first_weapon = (sword);
 	Weapon* bow = new Weapon(BOW, true);
 	second_weapon = (bow);
 	Shield* shield = new Shield(true);

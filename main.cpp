@@ -1,5 +1,5 @@
 ﻿#include "Main.h"
-
+#include <sstream>
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 #define DEBUG false
@@ -165,7 +165,65 @@ void draw_frame(short x, short y, MainWeapon* weapon) {
 	}
 	}
 }
-
+void draw_frame(short x, short y, SecondaryWeapon* weapon) {
+	draw_frame(x, y);
+	if (weapon->AreYouExist()) {
+		short x_start = x + 6;
+		short iy = y + 1;
+		for (int i = 0; i < 3; i++) {
+			SetXY(x_start+i, iy);
+			std::cout << "m";
+		}
+		iy++;
+		SetXY(x_start, iy);
+		std::cout << ")";
+		SetXY(x_start+1, iy);
+		std::cout << "-";
+		SetXY(x_start+2, iy);
+		std::cout << "(";
+		iy++;
+		x_start--;
+		SetXY(x_start, iy);
+		std::cout << "(";
+		SetXY(x_start+4, iy);
+		std::cout << ")";
+		iy++;
+		for (int i = 0; i < 3; i++) {
+			SetXY(x_start, iy);
+			std::cout << "|";
+			SetXY(x_start+4, iy);
+			std::cout << "|";
+			iy++;
+		}
+		iy--;
+		x_start += 1;
+		SetXY(x_start, iy);
+		std::cout << "_";
+		SetXY(x_start + 1, iy);
+		std::cout << "_";
+		SetXY(x_start + 2, iy);
+		std::cout << "_";
+		SetXY(x + 1, y + 7);
+		std::stringstream output;
+		output << u8"Тип:";
+		switch (weapon->type) {
+		case RAISE_CHARACTERISTICS:
+			output << u8"+АТК,ЛВК,ЗАЩ ";
+			break;
+		case DAMAGE:
+			output << u8"Урон ";
+			break;
+		case HEAL:
+			output << u8"Лечение ";
+			break;
+		case RANDOM:
+			output << u8"Случайный ";
+			break;
+		}
+		output << u8"Сила:" << weapon->action_value;
+		std::cout << output.str();
+	}
+}
 void Game::ShowRecords() {
 		std::ifstream file("records.txt");
 		int first_place=0, second_place=0, third_place=0;
@@ -309,8 +367,8 @@ void Game::draw_game(bool first_start=true) {
 					 draw_frame(0, 19, player.third_weapon);
 					 SetXY(50, 0);
 					 std::cout << u8"Второстепенные предметы";
-					 draw_frame(50, 2);
-					 draw_frame(50, 11);
+					 draw_frame(50, 2,&player.fs_weapon);
+					 draw_frame(50, 11,&player.ss_weapon);
 					 std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					 player.ready = true;
 					 
