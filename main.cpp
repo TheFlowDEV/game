@@ -1,5 +1,6 @@
 ﻿#include "Main.h"
 #include <sstream>
+
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 #define DEBUG false
@@ -383,9 +384,9 @@ void Game::draw_game(bool first_start=true) {
 				 else {
 					 SetXY(0,0);
 					 std::cout << u8"Главные оружия";
-					 draw_frame(0, 1,player.first_weapon);
-					 draw_frame(0, 10, player.second_weapon);
-					 draw_frame(0, 19, player.third_weapon);
+					 draw_frame(0, 1,player.first_weapon.get());
+					 draw_frame(0, 10, player.second_weapon.get());
+					 draw_frame(0, 19, player.third_weapon.get());
 					 SetXY(50, 0);
 					 std::cout << u8"Второстепенные предметы";
 					 draw_frame(50, 2,&player.fs_weapon);
@@ -408,6 +409,9 @@ void Game::draw_game(bool first_start=true) {
 		 enemy_thread.join();
 		 map.CleanALL();
 		 clear();
+		 std::ofstream ofs("player.sav",std::ios::binary);
+		 cereal::BinaryOutputArchive oa(ofs);
+		 oa(player,this->current_etage);
 	 }
 	}
 	
@@ -563,17 +567,18 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-		SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
-		mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
-		mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
-		mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
-		// Титульник(введение,название игры)
-		SetConsoleTitle(TEXT("Живые клетки"));
-		CONSOLE_CURSOR_INFO     cursorInfo;
-		GetConsoleCursorInfo(hout, &cursorInfo);
-		cursorInfo.bVisible = DEBUG; // видимость курсора
-		SetConsoleCursorInfo(hout, &cursorInfo);
-		
+		if (!DEBUG) {
+			SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
+			mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
+			mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
+			mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
+			// Титульник(введение,название игры)
+			SetConsoleTitle(TEXT("Живые клетки"));
+			CONSOLE_CURSOR_INFO     cursorInfo;
+			GetConsoleCursorInfo(hout, &cursorInfo);
+			cursorInfo.bVisible = DEBUG; // видимость курсора
+			SetConsoleCursorInfo(hout, &cursorInfo);
+
 			std::cout << start_screen;
 			Sleep(1000);
 			clear();
@@ -582,14 +587,28 @@ void Game::redraw_start_screen(int choose) {
 			clear();
 			// основная игра
 			draw_game();
-		
+		}
+		else {
+			std::ifstream file("player.sav",std::ios::binary);
+			if (file.is_open()) {
+				cereal::BinaryInputArchive ia(file);
+				int etage;
+				ia(player,etage);
+				std::cout << player.fs_weapon.type<<std::endl;
+				std::cout << etage;
+
+			}
+		}
 	}
 	
 
 
 int main()
 {
-	Game instance = Game();
-	instance.Initialize();
+	std::ifstream file("player.sav");
+	
+
+		Game instance = Game();
+		instance.Initialize();
 	return 0;
 }

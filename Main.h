@@ -1,4 +1,5 @@
 #pragma once
+#include "Serialization.h"
 #include <Windows.h>
 #include <conio.h>
 #include <string>

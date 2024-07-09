@@ -1,6 +1,7 @@
 ﻿#pragma once
 #ifndef PLAYER_H
 #define PLAYER_H
+#include "Serialization.h"
 #include <map>
 #include <utility>
 #include <Windows.h>
@@ -13,6 +14,7 @@
 #include <iostream>
 #include "ConsoleFunctions.h"
 #include "Enemy.h"
+//using boost::archive::archive_flags;
 enum Moves{UP,DOWN,LEFT,RIGHT};
 class Player {
 private:
@@ -20,9 +22,9 @@ private:
 	std::map<std::string, bool>& emitter;
 	std::map<std::string, std::pair<int, int>>& coords_emitter;
 
-	MainWeapon* first_weapon;
-	MainWeapon* second_weapon;
-	MainWeapon* third_weapon;
+	std::unique_ptr<MainWeapon> first_weapon;
+	std::unique_ptr<MainWeapon> second_weapon;
+	std::unique_ptr<MainWeapon> third_weapon;
 	SecondaryWeapon fs_weapon;
 	SecondaryWeapon ss_weapon;
 	
@@ -44,6 +46,12 @@ private:
 	void Move(Moves move);
 	
 public:
+	template<class Archive>
+	void serialize(Archive& ar) {
+
+		ar(level, exp, attack, defense, dexterity, first_weapon, second_weapon, third_weapon, fs_weapon, ss_weapon);
+
+	}
 	friend class Game;
 	std::pair<int, int>* player_coords;
 	bool ready = false;
@@ -51,7 +59,7 @@ public:
 	bool battlemode = false;
 	bool lookinventory = false;
 	bool chest_mode = false;
-
+	//friend class boost::serialization::access;
 	Player(std::mutex &mutexss,std::map<std::string,bool>& emit,std::map<std::string,std::pair<int,int>>& coords_emit);
 	void UpdateMap(Map* map_ptr, std::pair<int, int>* coords);
 	void HandleKeyboardEvents();
@@ -61,4 +69,6 @@ public:
 	void GetDamage(ENEMY_TYPES enemy_type);
 
 };
+//BOOST_CLASS_IMPLEMENTATION(Player, boost::serialization::level_type::object_serializable)
+
 #endif

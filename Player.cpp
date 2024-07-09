@@ -138,17 +138,16 @@ void Player::Move(Moves move) {
 }
 
 Player::Player(std::mutex& mutexss, std::map<std::string, bool>& emit, std::map<std::string, std::pair<int, int>>& coords_emit) :console_mutex(mutexss), emitter(emit), coords_emitter(coords_emit) {
-	Weapon* sword = new Weapon(SWORD, true);
-	first_weapon = (sword);
-	Weapon* bow = new Weapon(BOW, true);
-	second_weapon = (bow);
-	Shield* shield = new Shield(true);
-	third_weapon = (shield);
+	first_weapon = std::make_unique<Weapon>(Weapon(SWORD, true));
+	second_weapon = std::make_unique<Weapon>(Weapon(BOW, true));
+	third_weapon = std::make_unique<Shield>(Shield(true));
+	fs_weapon = SecondaryWeapon(RANDOM, 10);;
 }
 void Player::UpdateMap(Map* map_ptr, std::pair<int, int>* coords) {
 	this->player_coords = coords;
 	this->mapGen = map_ptr;
 }
+
 void Player::HandleKeyboardEvents() {
 	if (ready) {
 		if (canMove) {
