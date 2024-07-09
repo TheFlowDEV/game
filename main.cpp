@@ -336,6 +336,9 @@ void Game::draw_game(bool first_start=true) {
 			 player.canMove = false;
 			 if (emitter["regen"]) {
 				 current_etage++;
+				 std::ofstream ofs("player.sav", std::ios::binary);
+				 cereal::BinaryOutputArchive oa(ofs);
+				 oa(player, this->current_etage);
 				 emitter["special"] = false;
 				 emitter["regen"] = false;
 				 clear();
@@ -409,9 +412,6 @@ void Game::draw_game(bool first_start=true) {
 		 enemy_thread.join();
 		 map.CleanALL();
 		 clear();
-		 std::ofstream ofs("player.sav",std::ios::binary);
-		 cereal::BinaryOutputArchive oa(ofs);
-		 oa(player,this->current_etage);
 	 }
 	}
 	
@@ -567,7 +567,6 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-		if (!DEBUG) {
 			SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 			mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
 			mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
@@ -587,17 +586,7 @@ void Game::redraw_start_screen(int choose) {
 			clear();
 			// основная игра
 			draw_game();
-		}
-		else {
-			std::ifstream file("player.sav",std::ios::binary);
-			if (file.is_open()) {
-				cereal::BinaryInputArchive ia(file);
-				int etage;
-				ia(player,etage);
-				std::cout << player.fs_weapon.type<<std::endl;
-				std::cout << etage;
-
-			}
+		
 		}
 	}
 	
@@ -605,7 +594,6 @@ void Game::redraw_start_screen(int choose) {
 
 int main()
 {
-	std::ifstream file("player.sav");
 	
 
 		Game instance = Game();
