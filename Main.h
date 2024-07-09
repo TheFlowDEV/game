@@ -34,6 +34,9 @@ private:
 	void redraw_start_screen(int choose);
 	void draw_start_screen();
 	void redraw_map(bool regenerate);
+	void load_game(std::ifstream &file);
+	void load_game_choice(std::ifstream &file);
+	void save_game();
 public:
 	void Initialize();
 

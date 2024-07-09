@@ -318,7 +318,7 @@ void Game::draw_game(bool first_start=true) {
 	 std::stringstream HUD;
 	 HUD << u8"ИНВЕНТАРЬ[I] ";
 	 HUD << u8"АТК/ЛВК/ЗАЩ:" << player.attack << "/" << player.dexterity << "/" << player.defense << " ";
-	 HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money;
+	 HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money << u8" ЭТАЖ:" << this->current_etage;;
 	 std::cout << HUD.str();
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
 	 std::thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
@@ -336,9 +336,7 @@ void Game::draw_game(bool first_start=true) {
 			 player.canMove = false;
 			 if (emitter["regen"]) {
 				 current_etage++;
-				 std::ofstream ofs("player.sav", std::ios::binary);
-				 cereal::BinaryOutputArchive oa(ofs);
-				 oa(player, this->current_etage);
+				 save_game();
 				 emitter["special"] = false;
 				 emitter["regen"] = false;
 				 clear();
@@ -412,6 +410,7 @@ void Game::draw_game(bool first_start=true) {
 		 enemy_thread.join();
 		 map.CleanALL();
 		 clear();
+		 save_game();
 	 }
 	}
 	
@@ -468,7 +467,7 @@ void Game::redraw_map(bool regenerate) {
 		std::stringstream HUD;
 		HUD << u8"ИНВЕНТАРЬ[I] ";
 		HUD << u8"АТК/ЛВК/ЗАЩ:" << player.attack << "/" << player.dexterity << "/" << player.defense << " ";
-		HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money;
+		HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money<<u8" ЭТАЖ:"<<this->current_etage;
 		std::cout << HUD.str();
 	}
 
@@ -584,14 +583,125 @@ void Game::redraw_start_screen(int choose) {
 			// МЕНЮ
 			draw_start_screen();
 			clear();
+			std::ifstream file("player.sav", std::ios::binary);
+			if (file.is_open()) {
+				load_game_choice(file);
+				file.close();
+			}
 			// основная игра
 			draw_game();
 		
+		
+	}
+	void Game::load_game(std::ifstream &file) {
+
+			cereal::BinaryInputArchive ia(file);
+			ia(player, this->current_etage);
+	}
+	void Game::load_game_choice(std::ifstream& file) {
+		SetXY(0, 0);
+		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+		std::cout << u8"1.Продолжить последнюю игру";
+		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+		SetXY(0, 1);
+		std::cout << u8"2.Начать заново";
+		int choose = 0;
+		int key;
+		bool LoadShouldShow = true;
+		while (LoadShouldShow)
+		{
+			if (_kbhit()) {
+				key = _getch();
+				if (key == 224) {
+					int second_key = _getch();
+					if (second_key == 72) { // стрелка вверх
+						switch (choose) {
+						case 0:
+							SetXY(0, 0);
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							std::cout << u8"1.Продолжить последнюю игру";
+							break;
+						case 1:
+							SetXY(0, 1);
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							std::cout << u8"2.Начать заново";
+							break;
+						}
+						if (choose == 0) choose = 1;
+						else choose--;
+						switch (choose) {
+						case 0:
+							SetXY(0, 0);
+							SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+							std::cout << u8"1.Продолжить последнюю игру";
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+
+							break;
+						case 1:
+							SetXY(0, 1);
+							SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+							std::cout << u8"2.Начать заново";
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							break;
+						}
+					}
+					else if (second_key == 80) { //стрелка вниз
+						switch (choose) {
+						case 0:
+							SetXY(0, 0);
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							std::cout << u8"1.Продолжить последнюю игру";
+							break;
+						case 1:
+							SetXY(0, 1);
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							std::cout << u8"2.Начать заново";
+							break;
+						}
+						if (choose == 2) choose = 0;
+						else choose++;
+						switch (choose) {
+						case 0:
+							SetXY(0, 0);
+							SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+							std::cout << u8"1.Продолжить последнюю игру";
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+
+							break;
+						case 1:
+							SetXY(0, 1);
+							SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+							std::cout << u8"2.Начать заново";
+							SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+							break;
+						}
+					}
+				}
+				else if (key == 13) {
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+					switch (choose) {
+					case 0:
+						LoadShouldShow = false;
+						load_game(file);
+						break;
+					case 1:
+						LoadShouldShow = false;
+						save_game();
+						break;
+					}
+				}
+
+
+			}
 		}
 	}
 	
 
-
+	void Game::save_game() {
+		std::ofstream ofs("player.sav", std::ios::binary);
+		cereal::BinaryOutputArchive oa(ofs);
+		oa(player, this->current_etage);
+	}
 int main()
 {
 	
