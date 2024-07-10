@@ -39,7 +39,7 @@ struct BSPNode {
 
 class Room {
 private:
-    std::vector<std::shared_ptr<Enemy>> enemies;
+    std::vector<Enemy*> enemies;
     std::pair<int, int> chest;
     std::pair<int, int> exit;
     BSPNode* node;
@@ -47,7 +47,7 @@ private:
 public:
     Room(BSPNode* node);
     void generate(bool exit, bool chest, bool enemy, std::vector<std::vector<char>>* map,bool boss);
-    std::vector<std::shared_ptr<Enemy>>* get_enemies();
+    std::vector<Enemy*>* get_enemies();
     std::pair<int, int> get_chest();
     std::pair<int, int> get_exit();
     BSPNode* get_node();
