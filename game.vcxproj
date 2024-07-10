@@ -99,12 +99,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\wladimir\Desktop\c++\game\cereal;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\User\source\repos\TheFlowDEV\game\cereal;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>C:\Users\wladimir\Desktop\c++\game\cereal;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\User\source\repos\TheFlowDEV\game\cereal;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

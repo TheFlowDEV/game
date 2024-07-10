@@ -348,6 +348,21 @@ void Game::draw_game(bool first_start=true) {
 			 }
 			 else if (emitter["chest"]) {
 				 clear();
+				 if (rand() % 2 == 0) {
+					 TYPES type = static_cast<TYPES>(rand() % 3);
+					 std::unique_ptr<MainWeapon>wp;
+					 if (type == SHIELD) {
+						 wp = std::make_unique<Shield>(new Shield(false));
+					 }
+					 else {
+						 wp = std::make_unique<Weapon>(new Weapon(type, false));
+					 }
+					 SetXY(map.map_width - 5, 0); draw_frame(map.map_width - 5, 0, wp.get());
+				 }
+			 
+			 else {
+				 ACTIONS type = static_cast<ACTIONS>(rand() % 4);
+			 }
 				 map.generated_map[coords_emitter["chest"].second][coords_emitter["chest"].first] = '.';
 				 coords_emitter["chest"] = { 0,0 };
 				 emitter["special"] = false;
