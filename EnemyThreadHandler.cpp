@@ -9,8 +9,8 @@ void EnemyThreadHandler::handle_enemies(std::pair<int, int>& ptr_to_player_coord
             if (!stopMoving_cond) {
                 for (Room* room_ptr : this->mapgen->rooms) {
                     Room& room = *(room_ptr);
-                    std::vector<Enemy*>* enemies = room.get_enemies();
-                    for (Enemy* enemy : (*enemies)) {
+                    std::vector<std::shared_ptr<Enemy>>* enemies = room.get_enemies();
+                    for (std::shared_ptr<Enemy> enemy : (*enemies)) {
                         std::pair<int, int> old_coords = enemy->get_coords();
                         std::pair<int, int> new_coords = enemy->Move(ptr_to_player_coords);
                         HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);

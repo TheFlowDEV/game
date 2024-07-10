@@ -404,10 +404,10 @@ void Game::draw_game(bool first_start=true) {
 			 player.canMove = false;
 			 player.battlemode = true;
 			 clear();
-			 Enemy* enemy = nullptr;
+			 std::shared_ptr<Enemy> enemy;
 			 bool havefound = false;
 			 for (auto& i : map.rooms) {
-				 for (Enemy* j :*(i->get_enemies())) {
+				 for (std::shared_ptr<Enemy> j :*(i->get_enemies())) {
 					 std::pair<int, int> l_object = { player.player_coords->first - 1,player.player_coords->second}, d_object = { player.player_coords->first,player.player_coords->second+1 }, u_object = { player.player_coords->first,player.player_coords->second-1 }, r_object ={ player.player_coords->first + 1,player.player_coords->second };
 					 if (j->get_coords() == l_object || j->get_coords() == r_object || j->get_coords() == d_object || j->get_coords() == u_object) {
 						 enemy = j;

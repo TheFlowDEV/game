@@ -32,7 +32,7 @@ void Room::generate(bool exit, bool chest, bool enemy,std::vector<std::vector<ch
             enemy_coords.first = rand() % (node->width - 1) + node->x + 1;
             enemy_coords.second = rand() % (node->height - 1) + node->y + 1;
 
-            Enemy* enemy =(new Enemy(enemy_coords, map, this->node,boss?true:false));
+            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(Enemy(enemy_coords, map, this->node, false));
             enemies.push_back(enemy);
             if (rand() % 4 == 3) {
                 std::pair<int, int> enemy2_coords;
@@ -41,7 +41,7 @@ void Room::generate(bool exit, bool chest, bool enemy,std::vector<std::vector<ch
                 
 
                 if (enemy_coords != enemy2_coords) {
-                    Enemy* enemy2 = (new Enemy(enemy_coords, map, this->node, false));
+                    std::shared_ptr<Enemy> enemy2 = std::make_shared<Enemy>(Enemy(enemy_coords, map, this->node, false));
                     enemies.push_back(enemy2);
                 }
             }
@@ -49,7 +49,7 @@ void Room::generate(bool exit, bool chest, bool enemy,std::vector<std::vector<ch
         
 
     }
-std::vector<Enemy*>* Room::get_enemies() { return &this->enemies; }
+std::vector<std::shared_ptr<Enemy>>* Room::get_enemies() { return &this->enemies; }
 std::pair<int, int> Room::get_chest() { return this->chest; }
 std::pair<int, int> Room::get_exit() { return this->exit; }
 BSPNode* Room::get_node() { return this->node; }
@@ -212,7 +212,7 @@ void Map::CreateRoomContents(std::vector<std::vector<char>>& map) {
                 rooms.push_back(room);
                 std::pair<int, int> exit_coords = room->get_exit();
                 std::pair<int, int> chest_coords = room->get_chest();
-                std::vector<Enemy*>* enemies = room->get_enemies();
+                std::vector<std::shared_ptr<Enemy>>* enemies = room->get_enemies();
                 if (exit_coords.first!=0 && exit_coords.second!=0) map[exit_coords.second][exit_coords.first] = 'R';
                 if (chest_coords.first!=0 && chest_coords.second!=0) map[chest_coords.second][chest_coords.first] = '$';
                 for (auto& enemy : (*enemies)) {

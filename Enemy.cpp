@@ -2,7 +2,7 @@
 #include "Item.h"
 #include "Map.h"
 Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room,bool boss_spawn) {
-    *(this->coords) = coords;
+    (this->coords) = coords;
     this->map = map;
     this->room = room;
 
@@ -10,7 +10,7 @@ Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BS
 }
 
 std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
-    std::pair<int, int>& coords = *(this->coords);
+    std::pair<int, int>& coords = (this->coords);
     // нужно проверить видимость игрока в пределах комнаты
     if ((player_coords.first >= room->x + 1) && (player_coords.first <= room->x + room->width - 1) && (player_coords.second >= room->y - 1) && (player_coords.second <= room->y + room->height + 1))
     {
@@ -53,7 +53,5 @@ std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
 
 
 }
-std::pair<int, int> Enemy::get_coords() { return *(this->coords); }
-Enemy::~Enemy() {
-    delete coords;
-}
+std::pair<int, int> Enemy::get_coords() { return (this->coords); }
+
