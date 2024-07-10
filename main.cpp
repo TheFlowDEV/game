@@ -350,12 +350,12 @@ void Game::draw_game(bool first_start=true) {
 				 clear();
 				 if (rand() % 2 == 0) {
 					 TYPES type = static_cast<TYPES>(rand() % 3);
-					 std::unique_ptr<MainWeapon>wp;
+					 std::unique_ptr<MainWeapon>wp = nullptr;
 					 if (type == SHIELD) {
-						 wp = std::make_unique<Shield>(new Shield(false));
+						 wp = std::make_unique<Shield>(Shield(false));
 					 }
 					 else {
-						 wp = std::make_unique<Weapon>(new Weapon(type, false));
+						 wp = std::make_unique<Weapon>(Weapon(type, false));
 					 }
 					 SetXY(map.map_width - 5, 0); draw_frame(map.map_width - 5, 0, wp.get());
 				 }
