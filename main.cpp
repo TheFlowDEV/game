@@ -399,7 +399,41 @@ void Game::draw_game(bool first_start=true) {
 				 }
 			 }
 		 }
-		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
+		 if (player.EnemyNearThePlayer()) {
+			 player.ready = false;
+			 player.canMove = false;
+			 player.battlemode = true;
+			 clear();
+			 std::shared_ptr<Enemy> enemy;
+			 bool havefound = false;
+			 for (auto& i : map.rooms) {
+				 for (auto j : *(i->get_enemies())) {
+					 std::pair<int, int> l_object = { player.player_coords->first - 1,player.player_coords->second}, d_object = { player.player_coords->first,player.player_coords->second+1 }, u_object = { player.player_coords->first,player.player_coords->second-1 }, r_object ={ player.player_coords->first + 1,player.player_coords->second };
+					 if (j->get_coords() == l_object || j->get_coords() == r_object || j->get_coords() == d_object || j->get_coords() == u_object) {
+						 enemy = j;
+						 havefound = true;
+						 break;
+					 }
+				 }
+				 if (havefound) break;
+
+			 }
+			 std::stringstream description;
+			 description << "Однажды вы шли спокойно по тихой дороге подземелья. НО ТУТ ПОЯВЛЯЕТСЯ ";
+			 switch (enemy->type) {
+			 case BAT:
+				 if (rand() % 2 == 1) {
+					 description << "НЕВЫНОСИМАЯ ЛЕТУЧАЯ МЫШЬ";
+					 enemy->hp = rand()%10 + 10;
+				 }
+				 else {
+					 description << "ЛЕТУЧАЯ МЫШЬ-ПЕРЕКАЧ. Удачи вам сбежать от неё! Если доживёте конечно...";
+					 enemy->hp = rand() % 20 + 20;
+				 }
+			 
+			 }
+
+		 }
 
 	 }
 	 

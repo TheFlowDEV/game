@@ -39,15 +39,15 @@ struct BSPNode {
 
 class Room {
 private:
-    std::vector<Enemy*> enemies;
+    std::vector<std::shared_ptr<Enemy>> enemies;
     std::pair<int, int> chest;
     std::pair<int, int> exit;
     BSPNode* node;
 
 public:
     Room(BSPNode* node);
-    void generate(bool exit, bool chest, bool enemy, std::vector<std::vector<char>>* map);
-    std::vector<Enemy*>* get_enemies();
+    void generate(bool exit, bool chest, bool enemy, std::vector<std::vector<char>>* map,bool boss);
+    std::vector<std::shared_ptr<Enemy>>* get_enemies();
     std::pair<int, int> get_chest();
     std::pair<int, int> get_exit();
     BSPNode* get_node();
@@ -60,6 +60,8 @@ class Map {
 private:
     BSPNode* root_node;
     bool shop_exists = false;
+    int& current_etage;
+    bool boss_exists = false;
     float chest_veroyatnost = 5.25, enemy_veroyatnost = 1.25, exit_veroyatnost = 1, shop_veroyatnost = 2.5;   
     std::vector<Room*> rooms;
     std::vector<BSPNode*> nodes_of_rooms;
@@ -76,7 +78,7 @@ private:
     void CreateRoomContents(std::vector<std::vector<char>>& map);
     void DeleteBSPNode (BSPNode* node);
 public:
-    Map();
+    Map(int& current_etage_ad);
     void CleanALL();
     void generate(bool regenerate=false);
     std::pair<int, int> spawn_player();

@@ -1,12 +1,14 @@
 #include "Enemy.h"
 #include "Item.h"
 #include "Map.h"
-Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room) {
+Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room,bool boss_spawn) {
     *(this->coords) = coords;
     this->map = map;
     this->room = room;
-    this->type = static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
+
+    this->type = boss_spawn?THEBOSS:static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
 }
+
 std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
     std::pair<int, int>& coords = *(this->coords);
     // нужно проверить видимость игрока в пределах комнаты

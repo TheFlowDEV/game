@@ -26,9 +26,9 @@ private:
 	std::map<std::string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false},{"inventory",false} };
 	std::map<std::string, std::pair<int, int>>coords_emitter{ {"chest",{0,0}}};
 	Player player = Player(console_mutex,emitter,coords_emitter);
-	Map map = Map();
+	int current_etage = 0;
+	Map map = Map(current_etage);
 	long long seed;
-	int current_etage=0;
 	void ShowRecords();
 	void draw_game(bool first_start);
 	void redraw_start_screen(int choose);

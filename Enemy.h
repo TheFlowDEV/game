@@ -16,7 +16,9 @@ private:
     int hp;
 public:
     friend class Map;
-    Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room);
+    friend class Game;
+    Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room,bool boss);
+
     std::pair<int, int> Move(std::pair<int, int>& player_coords);
     std::pair<int, int> get_coords();
     void GetDamage(TYPES type_of_weapon, int damage);
