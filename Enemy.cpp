@@ -1,14 +1,16 @@
 #include "Enemy.h"
 #include "Item.h"
 #include "Map.h"
-Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room) {
-    *(this->coords) = coords;
+Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BSPNode* room,bool boss_spawn) {
+    (this->coords) = coords;
     this->map = map;
     this->room = room;
-    this->type = static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
+
+    this->type = boss_spawn?THEBOSS:static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
 }
+
 std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
-    std::pair<int, int>& coords = *(this->coords);
+    std::pair<int, int>& coords = (this->coords);
     // нужно проверить видимость игрока в пределах комнаты
     if ((player_coords.first >= room->x + 1) && (player_coords.first <= room->x + room->width - 1) && (player_coords.second >= room->y - 1) && (player_coords.second <= room->y + room->height + 1))
     {
@@ -51,7 +53,109 @@ std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
 
 
 }
-std::pair<int, int> Enemy::get_coords() { return *(this->coords); }
-Enemy::~Enemy() {
-    delete coords;
+std::pair<int, int> Enemy::get_coords() { return (this->coords); }
+bool Enemy::GetDamageByPotion(int damage) {
+    this->hp -= damage * 2;
+    if (hp <= 0) return true;
+    else return false;
+}
+int Enemy::UseDamage(int turn) {
+    if (turn % 3 == 0) {
+        switch (type) {
+        case ICE_GOLEM:
+            return rand() % 6 + 4;
+            break;
+        case ORK:
+            return rand() % 10 + 5;
+            break;
+        case BAT:
+            return rand() % 4 + 6;
+            break;
+        case ZOMBIE:
+            return rand() % 7 + 5;
+            break;
+        case SKELETON:
+            return rand() % 5 + 7;
+            break;
+        case THEBOSS:
+            return rand() % 13 + 8;
+            break;
+        }
+    }
+    else {
+        switch (type) {
+        case ICE_GOLEM:
+            return rand() % 5 + 4;
+            break;
+        case ORK:
+            return rand() % 7 + 4;
+            break;
+        case BAT:
+            return rand() % 4 + 4;
+            break;
+        case ZOMBIE:
+            return rand() % 4 + 4;
+            break;
+        case SKELETON:
+            return rand() % 5 + 4;
+            break;
+        case THEBOSS:
+            return rand() % 8 + 4;
+            break;
+    }
+    }
+}
+bool Enemy::GetDamage(TYPES type_of_weapon,int damage) {
+    switch (type) {
+    case ICE_GOLEM:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 2 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case ORK:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 3 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case BAT:
+        if (type_of_weapon == SWORD) {
+            this->hp -= damage;
+        }
+        else {
+            this->hp -= 2*damage;
+        }
+        break;
+    case ZOMBIE:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 3 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case SKELETON:
+        if (type_of_weapon == SWORD) {
+            this->hp -= damage;
+        }
+        else {
+            this->hp -=2* damage;
+        }
+        break;
+    case THEBOSS:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 4 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    }
+    if (this->hp <= 0) return true;
+    else return false;
 }

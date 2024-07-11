@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BattleManager.cpp" />
     <ClCompile Include="ConsoleFunctions.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyThreadHandler.cpp" />
@@ -26,8 +27,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Shop.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleManager.h" />
     <ClInclude Include="ConsoleFunctions.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Enemy_Thread_Handler.h" />
@@ -36,6 +39,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Serialization.h" />
+    <ClInclude Include="Shop.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

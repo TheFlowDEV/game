@@ -255,11 +255,12 @@ void Game::ShowRecords() {
 
 	}
 void Game::draw_game(bool first_start=true) {
+	game_started = true;
 	mciSendString(TEXT("stop intro"), NULL, 0, NULL);
 	mciSendString(TEXT("close intro"), NULL, 0, NULL);
 
 	if (first_start) {
-		seed = (clock() * rand()) + (clock() * (rand() + clock()));
+		shop.SetSeed(seed);
 	}
 	mciSendString(TEXT("open \"hodim.mp3\" type mpegvideo alias hodim"), NULL, 0, NULL);
 	mciSendString(TEXT("play hodim repeat"), NULL, 0, NULL);
@@ -303,6 +304,12 @@ void Game::draw_game(bool first_start=true) {
 				 std::cout << u8"🕱";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
+			 case 'B':
+				 SetXY(i, j);
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+				 std::cout << "B";
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 break;
 			 default:
 				 SetXY(i, j);
 				 std::cout << map.generated_map[j][i];
@@ -323,6 +330,7 @@ void Game::draw_game(bool first_start=true) {
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
 	 std::thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
 	 bool needStop = false;
+	 bool win_game = false;
 	 player.canMove = true;
 	 player.ready = true;
 
@@ -336,6 +344,7 @@ void Game::draw_game(bool first_start=true) {
 			 player.canMove = false;
 			 if (emitter["regen"]) {
 				 current_etage++;
+				 shop.Clear();
 				 save_game();
 				 emitter["special"] = false;
 				 emitter["regen"] = false;
@@ -375,6 +384,205 @@ void Game::draw_game(bool first_start=true) {
 			 }
 			 else if (emitter["shop"]) {
 				 clear();
+				 bool LeaveShop = false;
+				 int choice = 0;
+				 shop.Generate();
+				 SetXY(0, 0);
+				 SetConsoleTextAttribute(hout,8 << 4 | 15);
+				 std::cout << shop.GetDescription(shop.first_item);
+				 SetConsoleTextAttribute(hout, 0 << 4 | 15);
+				 SetXY(0, 1);
+				 std::cout << shop.GetDescription(shop.second_item);
+				 SetXY(0, 2);
+				 std::cout << shop.GetDescription(shop.third_item);
+				 SetXY(0, 3);
+				 std::cout << u8"Выход";
+				 while (!LeaveShop) {
+					 if (_kbhit()) {
+						 if (GetAsyncKeyState(VK_UP) & 0x8000) {
+							 switch (choice) {
+							 case 0:
+								 SetXY(0, 0);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.first_item);
+								 break;
+							 case 1:
+								 SetXY(0, 1);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.second_item);
+								 break;
+							 case 2:
+								 SetXY(0, 2);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.third_item);
+								 break;
+							 case 3:
+								 SetXY(0, 3);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << u8"Выход";
+								 break;
+							 }
+							 if (choice == 0) choice = 3;
+							 else choice--;
+							 switch (choice) {
+							 case 0:
+								 SetXY(0, 0);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.first_item);
+								 break;
+							 case 1:
+								 SetXY(0, 1);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.second_item);
+								 break;
+							 case 2:
+								 SetXY(0, 2);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.third_item);
+								 break;
+							 case 3:
+								 SetXY(0, 3);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << u8"Выход";
+								 break;
+							 }
+							 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+							 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+						 }
+						 else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+							 switch (choice) {
+							 case 0:
+								 SetXY(0, 0);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.first_item);
+								 break;
+							 case 1:
+								 SetXY(0, 1);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.second_item);
+								 break;
+							 case 2:
+								 SetXY(0, 2);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.third_item);
+								 break;
+							 case 3:
+								 SetXY(0, 3);
+								 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+								 std::cout << u8"Выход";
+								 break;
+							 }
+							 if (choice == 3) choice = 0;
+							 else choice++;
+							 switch (choice) {
+							 case 0:
+								 SetXY(0, 0);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.first_item);
+								 break;
+							 case 1:
+								 SetXY(0, 1);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.second_item);
+								 break;
+							 case 2:
+								 SetXY(0, 2);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << shop.GetDescription(shop.third_item);
+								 break;
+							 case 3:
+								 SetXY(0, 3);
+								 SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+								 std::cout << u8"Выход";
+								 break;
+							 }
+							 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+							 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+						 }
+						 else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+							 switch (choice) {
+							 case 0:{
+								 if (shop.first_item->isDefined && shop.first_item->cost <= player.money) {
+									 clear();
+									 player.money -= shop.first_item->cost;
+									 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+									 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+									 ChangeInventory((shop.Buy(0)));
+									 shop.first_item->isDefined = false;
+
+									 clear();
+									 SetXY(0, 0);
+									 SetConsoleTextAttribute(hout, 8 << 4 | 15);
+									 std::cout << shop.GetDescription(shop.first_item);
+									 SetConsoleTextAttribute(hout, 0 << 4 | 15);
+									 SetXY(0, 1);
+									 std::cout << shop.GetDescription(shop.second_item);
+									 SetXY(0, 2);
+									 std::cout << shop.GetDescription(shop.third_item);
+									 SetXY(0, 3);
+									 std::cout << u8"Выход";
+									 choice = 0;
+
+								 }
+								 break;
+							 }
+							 case 1:{
+								 if (shop.second_item->isDefined && shop.second_item->cost <= player.money) {
+									 clear();
+									 player.money -= shop.second_item->cost;
+									 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+									 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+									 ChangeInventory(shop.Buy(1));
+									 shop.second_item->isDefined = false;
+									 clear();
+									 SetXY(0, 0);
+									 SetConsoleTextAttribute(hout, 8 << 4 | 15);
+									 std::cout << shop.GetDescription(shop.first_item);
+									 SetConsoleTextAttribute(hout, 0 << 4 | 15);
+									 SetXY(0, 1);
+									 std::cout << shop.GetDescription(shop.second_item);
+									 SetXY(0, 2);
+									 std::cout << shop.GetDescription(shop.third_item);
+									 SetXY(0, 3);
+									 std::cout << u8"Выход";
+									 choice = 0;
+								 }
+								 break;
+							 }
+							 case 2:
+								 {
+								 if (shop.third_item->isDefined && shop.third_item->cost <= player.money) {
+									 clear();
+									 player.money -= shop.third_item->cost;
+									 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+									 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+									 ChangeInventory(shop.Buy(2));
+									 clear();
+									 shop.third_item->isDefined = false;
+									 SetXY(0, 0);
+									 SetConsoleTextAttribute(hout, 8 << 4 | 15);
+									 std::cout << shop.GetDescription(shop.first_item);
+									 SetConsoleTextAttribute(hout, 0 << 4 | 15);
+									 SetXY(0, 1);
+									 std::cout << shop.GetDescription(shop.second_item);
+									 SetXY(0, 2);
+									 std::cout << shop.GetDescription(shop.third_item);
+									 SetXY(0, 3);
+									 std::cout << u8"Выход";
+									 choice = 0;
+								 }
+								 break;
+								 }
+							 case 3:
+								 clear();
+								 LeaveShop = true;
+								 break;
+							 }
+							 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+							 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+						 }
+					 }
+				 }
 				 emitter["special"] = false;
 				 emitter["shop"] = false;
 				 redraw_map(false);
@@ -407,18 +615,187 @@ void Game::draw_game(bool first_start=true) {
 					 std::cout << u8"Второстепенные предметы";
 					 draw_frame(50, 2,&player.fs_weapon);
 					 draw_frame(50, 11,&player.ss_weapon);
-					 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
+					 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 					 player.ready = true;
 					 
 
 				 }
 			 }
+			 else if (emitter["battle_end"]) {
+				 mciSendString(TEXT("stop battle"), NULL, 0, NULL);
+				 mciSendString(TEXT("close battle"), NULL, 0, NULL);
+
+				 map.generated_map[bm.enemy->get_coords().second][bm.enemy->get_coords().first] = '.';
+				 bool havefound = false;
+				 for (auto & i : map.rooms) {
+					 for (int j = 0; j < i->get_enemies()->size();j++) {
+
+						 if (bm.enemy==(*(i->get_enemies()))[j]) {
+							 havefound = true;
+							 i->get_enemies()->erase(i->get_enemies()->begin() + j);
+							 break;
+						 }
+					 }
+					 if (havefound) break;
+
+				 }
+				 if (bm.enemy->type == THEBOSS) {
+					 win_game = true;
+					 emitter["battle_end"] = false;
+					 emitter["special"] = false;
+					 bm.clear_bm();
+					 needStop = true;
+				 }
+				 else {
+					 bm.clear_bm();
+					 redraw_map(false);
+					 mciSendString(TEXT("play hodim repeat"), NULL, 0, NULL);
+					 player.battlemode = false;
+					 emitter["battle_end"] = false;
+					 emitter["special"] = false;
+					 player.canMove = true;
+					 player.ready = true;
+					 enemy_thread_handler.startMoving();
+				 }
+			 }
 		 }
-		 //if (player.EnemyNearThePlayer()) player.canMove = false; и вход в битву
+		 if (player.EnemyNearThePlayer()&& !player.battlemode) {
+			 mciSendString(TEXT("stop hodim"), NULL, 0, NULL);
+			 mciSendString(TEXT("open \"battle.mp3\" type mpegvideo alias battle"), NULL, 0, NULL);
+
+			 player.ready = false;
+			 player.canMove = false;
+			 enemy_thread_handler.stopMoving();
+			 player.battlemode = true;
+			 clear();
+			 std::shared_ptr<Enemy> enemy;
+			 bool havefound = false;
+			 for (auto& i : map.rooms) {
+				 for (int j = 0; j < (i->get_enemies())->size(); j++) {
+					 std::pair<int, int> l_object = { player.player_coords->first - 1,player.player_coords->second}, d_object = { player.player_coords->first,player.player_coords->second+1 }, u_object = { player.player_coords->first,player.player_coords->second-1 }, r_object ={ player.player_coords->first + 1,player.player_coords->second };
+					 std::shared_ptr<Enemy> enemy_temp = (*(i->get_enemies()))[j];
+					 if (enemy_temp->get_coords() == l_object || enemy_temp->get_coords() == r_object || enemy_temp->get_coords() == d_object || enemy_temp->get_coords() == u_object) {
+						 enemy = enemy_temp;
+						 havefound = true;
+						 break;
+					 }
+				 }
+				 if (havefound) break;
+
+			 }
+			 std::stringstream description;
+			 description << u8"Однажды вы шли спокойно по тихой дороге подземелья. НО ТУТ ПОЯВЛЯЕТСЯ ";
+			 switch (enemy->type) {
+			 case BAT:
+				 if (rand() % 2 == 1) {
+					 description << u8"НЕВЫНОСИМАЯ ЛЕТУЧАЯ МЫШЬ";
+					 enemy->hp = rand()%10 + 10;
+				 }
+				 else {
+					 description << u8"ЛЕТУЧАЯ МЫШЬ-ПЕРЕКАЧ. Удачи вам сбежать от неё! Если доживёте конечно...";
+					 enemy->hp = rand() % 20 + 20;
+				 }
+				 break;
+			 case ICE_GOLEM:
+				 description << u8"ЛЕДЕНЮЩИЙ ЛЕДЯНОЙ ГОЛЕМ";
+				 enemy->hp = rand() % 9 + 15;
+				 break;
+			 case ORK:
+				 if (rand() % 4 == 1) {
+					 description << u8"орк,который ругается матом.Кого-то он вам напоминает...";
+				 }
+				 else {
+					 description << u8"ЗЕЛЁНЫЙ И ГРЯЗНЫЙ ОРК";
+				 }
+				 enemy->hp = rand() % 15 + 15;
+				 break;
+
+			 case ZOMBIE:
+				 if (rand() % 4 == 1) {
+					 description << u8"зомби с квадратной головой(???). Он идёт прямо на вас,циклично издавая звуки,похожие на вздох";
+				 }
+				 else {
+					 description << u8"ЗАГНИВАЮЩИЙ НА ХОДУ ЗОМБИ. ОН ТАК И НОРОВИТ ВАС ЗАРАЗИТЬ!!!!";
+				 }
+				 enemy->hp = 20;
+				 break;
+
+			 case SKELETON:
+				 if (rand() % 4 == 1) {
+					 description << u8"скелет с квадратной головой(???). Он идёт прямо на вас,циклично издавая звуки,похожие на хруст костей";
+				 }
+				 else {
+					 description << u8"СКЕЛЕТ. О УЖАС, ОН ИДЁТ ПРЯМО НА ВАС!!!";
+				 }
+				 break;
+
+			 case THEBOSS:
+				 description << u8"ОГРОМНОЕ МОХНАТОЕ НЕЧТО С ЩУПАЛЬЦАМИ. НАДЕЙТЕСЬ, ЧТО ЭТО НЕ КТУЛХУ!!!!";
+				 enemy->hp = 100;
+				 break;
+
+			 }
+			 std::cout << description.str();
+			 bm.enemy = enemy;
+			 player.ready = false;
+			 player.canMove = false;
+			 player.battlemode = true;
+			 std::this_thread::sleep_for(std::chrono::seconds(1));
+			 clear();
+			 mciSendString(TEXT("play battle repeat"), NULL, 0, NULL);
+			 bm.InitializeUI();
+			 player.ready = true;
+		 }
 
 	 }
 	 
-	
+	 if (win_game) {
+		 clear();
+		 SetXY(0, 0);
+		 std::cout << u8"После битвы с недоКтулху вы проснулись";
+		 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+		 SetXY(0, 1);
+		 std::cout << u8"Вы случайно заснули у компьютера, пока играли в Dead Cells.";
+
+		 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+		 SetXY(0, 3);
+		 std::cout << u8"Надо же было такому присниться...";
+		 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+		 clear();
+		 std::ifstream file("records.txt");
+		 int first_place = 0, second_place = 0, third_place = 0;
+		 if (file.is_open()) {
+			 std::string line;
+			 if (getline(file, line)) first_place = stoi(line);
+			 if (getline(file, line)) second_place = stoi(line);
+			 if (getline(file, line)) third_place = stoi(line);
+		 }
+		 int player_score = player.exp * 100 + player.money;
+		 if (player_score > first_place) {
+			 
+			 third_place = second_place;
+			 second_place = first_place;
+			 first_place = player_score;
+		 }
+		 else if (player_score > second_place) {
+
+			 third_place = second_place;
+			 second_place = player_score;
+		 }
+		 else if (player_score > third_place) {
+			 third_place = player_score;
+		 }
+		 std::ofstream file_w("records.txt");
+		 file_w << first_place << std::endl;
+		 file_w << second_place << std::endl;
+		 file_w << third_place << std::endl;
+		 map.CleanALL();
+		 enemy_thread_handler.stop();
+		 enemy_thread.join();
+		 clear();
+
+	}
 	 if (emitter["exit"]) {
 
 		 enemy_thread_handler.stop();
@@ -426,6 +803,7 @@ void Game::draw_game(bool first_start=true) {
 		 map.CleanALL();
 		 clear();
 		 save_game();
+		 exit(0);
 	 }
 	}
 	
@@ -554,7 +932,7 @@ void Game::redraw_start_screen(int choose) {
 						redraw_start_screen(choose);
 					}
 				}
-				else if (key == 13) {
+				else if (key == 13 && GetAsyncKeyState(VK_RETURN)&0x8000) {
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 
 					switch (choose) {
@@ -581,12 +959,17 @@ void Game::redraw_start_screen(int choose) {
 
 	void Game::Initialize()
 	{
-			SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
+		while (true) {
+			if (!game_started) {
+				SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
+
+				// Титульник(введение,название игры)
+				SetConsoleTitle(TEXT("Живые клетки"));
+			}
 			mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
 			mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
 			mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
-			// Титульник(введение,название игры)
-			SetConsoleTitle(TEXT("Живые клетки"));
+
 			CONSOLE_CURSOR_INFO     cursorInfo;
 			GetConsoleCursorInfo(hout, &cursorInfo);
 			cursorInfo.bVisible = DEBUG; // видимость курсора
@@ -605,7 +988,7 @@ void Game::redraw_start_screen(int choose) {
 			}
 			// основная игра
 			draw_game();
-		
+		}
 		
 	}
 	void Game::load_game(std::ifstream &file) {
@@ -724,4 +1107,218 @@ int main()
 		Game instance = Game();
 		instance.Initialize();
 	return 0;
+}
+void Game::ChangeInventory(Item* item) {
+	int choice = 0;
+	SetXY(0, 0);
+	std::cout << u8"Главные оружия";
+	SetXY(30, 0);
+	std::cout << shop.GetDescription(item);
+	if (item->item_type == MAIN_WEAPON) {
+		SetXY(30, 5);
+		std::cout << "<-";
+	}
+	else {
+		SetXY(77, 7);
+		std::cout << "<-";
+	}
+	draw_frame(0, 1, player.first_weapon.get());
+	draw_frame(0, 10, player.second_weapon.get());
+	draw_frame(0, 19, player.third_weapon.get());
+	SetXY(50, 0);
+	std::cout << u8"Второстепенные предметы";
+	draw_frame(50, 2, &player.fs_weapon);
+	draw_frame(50, 11, &player.ss_weapon);
+	bool HasNotChanged = false;
+	while (!HasNotChanged) {
+		if (_kbhit()) {
+			if (item->item_type == MAIN_WEAPON) {
+				if (GetAsyncKeyState(VK_UP) & 0x8000) {
+					switch (choice) {
+					case 0:
+						SetXY(30, 5);
+						std::cout << "  ";
+						break;
+					case 1:
+						SetXY(30, 15);
+						std::cout << "  ";
+						break;
+					case 2:
+						SetXY(30, 24);
+						std::cout << "  ";
+						break;
+					}
+					if (choice == 0) choice = 2;
+					else choice--;
+					switch (choice) {
+					case 0:
+						SetXY(30, 5);
+						std::cout << "<-";
+						break;
+					case 1:
+						SetXY(30, 15);
+						std::cout << "<-";
+						break;
+					case 2:
+						SetXY(30, 24);
+						std::cout << "<-";
+						break;
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				}
+				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+					switch (choice) {
+					case 0:
+						SetXY(30, 5);
+						std::cout << "  ";
+						break;
+					case 1:
+						SetXY(30, 15);
+						std::cout << "  ";
+						break;
+					case 2:
+						SetXY(30, 24);
+						std::cout << "  ";
+						break;
+					}
+					if (choice == 2) choice = 0;
+					else choice++;
+					switch (choice) {
+					case 0:
+						SetXY(30, 5);
+						std::cout << "<-";
+						break;
+					case 1:
+						SetXY(30, 15);
+						std::cout << "<-";
+						break;
+					case 2:
+						SetXY(30, 24);
+						std::cout << "<-";
+						break;
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				}
+				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+					switch (choice) {
+					case 0: {
+						MainWeapon* weapon = (dynamic_cast<MainWeapon*>(item));
+						if (weapon->type == SWORD || weapon->type == BOW) {
+							player.first_weapon = std::make_unique<Weapon>(*(static_cast<Weapon*>(weapon)));
+
+						}
+						else {
+							player.first_weapon = std::make_unique<Shield>(*(static_cast<Shield*>(weapon)));
+
+						}
+
+						break;
+					}
+					case 1: {
+						MainWeapon* weapon = (dynamic_cast<MainWeapon*>(item));
+						if (weapon->type == SWORD || weapon->type == BOW) {
+							player.second_weapon = std::make_unique<Weapon>(*(static_cast<Weapon*>(weapon)));
+
+						}
+						else {
+							player.second_weapon = std::make_unique<Shield>(*(static_cast<Shield*>(weapon)));
+
+						}
+						break;
+					}
+
+					case 2:
+					{
+						MainWeapon* weapon = (dynamic_cast<MainWeapon*>(item));
+						if (weapon->type == SWORD || weapon->type == BOW) {
+							player.third_weapon = std::make_unique<Weapon>(*(static_cast<Weapon*>(weapon)));
+
+						}
+						else {
+							player.third_weapon = std::make_unique<Shield>(*(static_cast<Shield*>(weapon)));
+
+						}
+						break;
+					}
+					}
+					HasNotChanged = true;
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				}
+			}
+
+			else {
+				if (GetAsyncKeyState(VK_UP) & 0x8000) {
+					switch (choice) {
+					case 0:
+						SetXY(77, 7);
+						std::cout << "  ";
+						break;
+					case 1:
+						SetXY(77, 16);
+						std::cout << "  ";
+						break;
+					}
+					if (choice == 0) choice = 1;
+					else choice--;
+					switch (choice) {
+					case 0:
+						SetXY(77, 7);
+						std::cout << "<-";
+						break;
+					case 1:
+						SetXY(77, 16);
+						std::cout << "<-";
+						break;
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				}
+				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+					switch (choice) {
+					case 0:
+						SetXY(77, 7);
+						std::cout << "  ";
+						break;
+					case 1:
+						SetXY(77, 16);
+						std::cout << "  ";
+						break;
+					}
+					if (choice == 1) choice = 0;
+					else choice++;
+					switch (choice) {
+					case 0:
+						SetXY(77, 7);
+						std::cout << "<-";
+						break;
+					case 1:
+						SetXY(77, 16);
+						std::cout << "<-";
+						break;
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				}
+
+				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+					switch (choice) {
+					case 0:
+						player.fs_weapon = *(static_cast<SecondaryWeapon*>(item));
+						break;
+					case 1:
+						player.ss_weapon = *(static_cast<SecondaryWeapon*>(item));
+						break;
+
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+					HasNotChanged = true;
+				}
+			}
+
+		}
+	}
 }

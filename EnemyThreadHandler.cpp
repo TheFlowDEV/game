@@ -9,9 +9,8 @@ void EnemyThreadHandler::handle_enemies(std::pair<int, int>& ptr_to_player_coord
             if (!stopMoving_cond) {
                 for (Room* room_ptr : this->mapgen->rooms) {
                     Room& room = *(room_ptr);
-                    std::vector<Enemy*>* enemies = room.get_enemies();
-                    for (Enemy* enemy_ptr : (*enemies)) {
-                        Enemy* enemy = enemy_ptr;
+                    std::vector<std::shared_ptr<Enemy>>* enemies = room.get_enemies();
+                    for (std::shared_ptr<Enemy> enemy : (*enemies)) {
                         std::pair<int, int> old_coords = enemy->get_coords();
                         std::pair<int, int> new_coords = enemy->Move(ptr_to_player_coords);
                         HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -21,9 +20,13 @@ void EnemyThreadHandler::handle_enemies(std::pair<int, int>& ptr_to_player_coord
                         map[old_coords.second][old_coords.first] = '.';
                         std::cout << '.';
                         SetXY(new_coords.first, new_coords.second);
-                        map[new_coords.second][new_coords.first] = 'E';
+
+                        if (enemy->type!=THEBOSS)map[new_coords.second][new_coords.first] = 'E';
+                        else map[new_coords.second][new_coords.first] = 'E';
                         SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
-                        std::cout << u8"🕱";
+                       
+                        if (enemy->type != THEBOSS) std::cout << u8"🕱";
+                        else std::cout << "B";
                         SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 
                         console_mutex.unlock();
