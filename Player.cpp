@@ -606,7 +606,7 @@ void Player::Win() {
 	int old_level = exp / 20;
 	int exp = rand() % 20 + 1;
 	int money = rand() % 40 + 2;
-	level = (this->exp / 20);
+	level = (this->exp / 50);
 	this->exp += exp;
 	this->money += money;
 	std::cout << u8"Вы получаете " << exp << u8" единиц опыта и " << money << u8" денег";

@@ -16,7 +16,7 @@ void BattleManager::enemy_turn() {
 		draw_player_stats();
 		if (player.hp <= 0) {
 			clear();
-			std::cout << "ÈÃĞÀ ÎÊÎÍ×ÅÍÀ! ÊÑÒÀÒÈ, ÂÀØÈ ÑÎÕĞÀÍÅÍÈß ÓÄÀËÅÍÛ ÒÎÆÅ! ÕÎĞÎØÅÃÎ ÄÍß!";
+			std::cout << u8"ÈÃĞÀ ÎÊÎÍ×ÅÍÀ! ÊÑÒÀÒÈ, ÂÀØÈ ÑÎÕĞÀÍÅÍÈß ÓÄÀËÅÍÛ ÒÎÆÅ! ÕÎĞÎØÅÃÎ ÄÍß!";
 			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 			remove("player.sav");
 			exit(0);

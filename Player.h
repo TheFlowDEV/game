@@ -53,7 +53,7 @@ public:
 	template<class Archive>
 	void serialize(Archive& ar) {
 
-		ar(level, exp, attack, defense, dexterity, first_weapon, second_weapon, third_weapon, fs_weapon, ss_weapon);
+		ar(level, hp, exp, money, attack, defense, dexterity, first_weapon, second_weapon, third_weapon, fs_weapon, ss_weapon);
 
 	}
 	friend class Game;

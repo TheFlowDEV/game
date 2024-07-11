@@ -32,7 +32,7 @@ void Room::generate(bool exit, bool chest, bool enemy,std::vector<std::vector<ch
             enemy_coords.first = rand() % (node->width - 1) + node->x + 1;
             enemy_coords.second = rand() % (node->height - 1) + node->y + 1;
 
-            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(Enemy(enemy_coords, map, this->node, false));
+            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(Enemy(enemy_coords, map, this->node, boss));
             enemies.push_back(enemy);
             if (rand() % 4 == 3) {
                 std::pair<int, int> enemy2_coords;
