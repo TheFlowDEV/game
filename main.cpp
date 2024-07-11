@@ -360,6 +360,10 @@ void Game::draw_game(bool first_start=true) {
 			 }
 			 else if (emitter["shop"]) {
 				 clear();
+				 bool LeaveShop = false;
+				 while (!LeaveShop) {
+
+				 }
 				 emitter["special"] = false;
 				 emitter["shop"] = false;
 				 redraw_map(false);
