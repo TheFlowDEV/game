@@ -419,6 +419,7 @@ void Game::draw_game(bool first_start=true) {
 				 }
 				 bm.clear_bm();
 				 redraw_map(false);
+				 mciSendString(TEXT("play hodim repeat"),NULL,0,NULL);
 				 player.battlemode = false;
 				 emitter["battle_end"] = false;
 				 emitter["special"] = false;
@@ -428,6 +429,9 @@ void Game::draw_game(bool first_start=true) {
 			 }
 		 }
 		 if (player.EnemyNearThePlayer()&& !player.battlemode) {
+			 mciSendString(TEXT("stop hodim"), NULL, 0, NULL);
+			 mciSendString(TEXT("open \"battle.mp3\" type mpegvideo alias battle"), NULL, 0, NULL);
+
 			 player.ready = false;
 			 player.canMove = false;
 			 enemy_thread_handler.stopMoving();
@@ -507,6 +511,7 @@ void Game::draw_game(bool first_start=true) {
 			 player.battlemode = true;
 			 std::this_thread::sleep_for(std::chrono::seconds(1));
 			 clear();
+			 mciSendString(TEXT("play battle repeat"), NULL, 0, NULL);
 			 bm.InitializeUI();
 			 player.ready = true;
 		 }

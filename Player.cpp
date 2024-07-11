@@ -600,6 +600,8 @@ void Player::GetDamage(int damage) {
 void Player::Win() {
 	ready = false;
 	clear();
+	mciSendString(TEXT("stop battle"), NULL, 0, NULL);
+	mciSendString(TEXT("close battle"),NULL,0,NULL);
 	SetXY(0, 0);
 	std::cout << u8"Вы браво сражались и победили. Поздравляем!";
 	SetXY(0, 1);

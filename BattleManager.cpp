@@ -130,7 +130,7 @@ bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 	}
 }
 void BattleManager::run() {
-	if (rand() % player.dexterity==0) {
+	if (rand() % player.dexterity==0 && enemy->type!=THEBOSS) {
 		clear();
 		std::cout << u8"Вы сбежали!";
 		std::this_thread::sleep_for(std::chrono::milliseconds(1500));
@@ -141,7 +141,8 @@ void BattleManager::run() {
 		std::cout << u8"У вас, к сожалению, ничего не вышло";
 		std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 		std::cout << "                                    ";
-		std::cout << u8"Ожидаем следующего действия";
+		turn++;
+		enemy_turn();
 
 	}
 }
