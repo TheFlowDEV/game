@@ -9,7 +9,10 @@ enum TYPES { SWORD, BOW,SHIELD};
 enum ACTIONS {HEAL,DAMAGE,RAISE_CHARACTERISTICS,RANDOM};
 
 class Player;
-class MainWeapon {
+class Item {
+
+};
+class MainWeapon:Item {
 public:
 	TYPES type;
 	bool isDefined = false;
@@ -56,7 +59,7 @@ public:
 	std::string get_description();
 
 };
-class SecondaryWeapon {
+class SecondaryWeapon:Item {
 private:
 	//friend class boost::serialization::access;
 	bool IsDefined;
