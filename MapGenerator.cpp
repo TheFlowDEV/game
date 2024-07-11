@@ -202,11 +202,11 @@ void Map::CreateRoomContents(std::vector<std::vector<char>>& map) {
                 }
                 else {
                     if (current_etage == 6 && !boss_exists) {
-                        room->generate(exit, chest, enemy, map_ptr,true);
+                        room->generate(false, chest, enemy, map_ptr,true);
                         boss_exists = true;
                     }
                     else {
-                        room->generate(exit, chest, enemy, map_ptr, false);
+                        room->generate((current_etage==6)?false:exit, chest, enemy, map_ptr, false);
                     }
                 }
                 rooms.push_back(room);

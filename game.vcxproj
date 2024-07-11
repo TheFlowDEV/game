@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BattleManager.cpp" />
     <ClCompile Include="ConsoleFunctions.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyThreadHandler.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleManager.h" />
     <ClInclude Include="ConsoleFunctions.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Enemy_Thread_Handler.h" />

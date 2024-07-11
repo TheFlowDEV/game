@@ -398,19 +398,45 @@ void Game::draw_game(bool first_start=true) {
 
 				 }
 			 }
+			 else if (emitter["battle_end"]) {
+				 map.generated_map[bm.enemy->get_coords().second][bm.enemy->get_coords().first] = '.';
+				 bool havefound = false;
+				 for (auto & i : map.rooms) {
+					 for (int j = 0; j < i->get_enemies()->size();j++) {
+
+						 if (bm.enemy==(*(i->get_enemies()))[j]) {
+							 havefound = true;
+							 i->get_enemies()->erase(i->get_enemies()->begin() + j);
+							 break;
+						 }
+					 }
+					 if (havefound) break;
+
+				 }
+				 bm.clear_bm();
+				 redraw_map(false);
+				 player.battlemode = false;
+				 emitter["battle_end"] = false;
+				 emitter["special"] = false;
+				 player.canMove = true;
+				 player.ready = true;
+				 enemy_thread_handler.startMoving();
+			 }
 		 }
-		 if (player.EnemyNearThePlayer()) {
+		 if (player.EnemyNearThePlayer()&& !player.battlemode) {
 			 player.ready = false;
 			 player.canMove = false;
+			 enemy_thread_handler.stopMoving();
 			 player.battlemode = true;
 			 clear();
 			 std::shared_ptr<Enemy> enemy;
 			 bool havefound = false;
 			 for (auto& i : map.rooms) {
-				 for (std::shared_ptr<Enemy> j :*(i->get_enemies())) {
+				 for (int j = 0; j < (i->get_enemies())->size(); j++) {
 					 std::pair<int, int> l_object = { player.player_coords->first - 1,player.player_coords->second}, d_object = { player.player_coords->first,player.player_coords->second+1 }, u_object = { player.player_coords->first,player.player_coords->second-1 }, r_object ={ player.player_coords->first + 1,player.player_coords->second };
-					 if (j->get_coords() == l_object || j->get_coords() == r_object || j->get_coords() == d_object || j->get_coords() == u_object) {
-						 enemy = j;
+					 std::shared_ptr<Enemy> enemy_temp = (*(i->get_enemies()))[j];
+					 if (enemy_temp->get_coords() == l_object || enemy_temp->get_coords() == r_object || enemy_temp->get_coords() == d_object || enemy_temp->get_coords() == u_object) {
+						 enemy = enemy_temp;
 						 havefound = true;
 						 break;
 					 }
@@ -419,19 +445,66 @@ void Game::draw_game(bool first_start=true) {
 
 			 }
 			 std::stringstream description;
-			 description << "Однажды вы шли спокойно по тихой дороге подземелья. НО ТУТ ПОЯВЛЯЕТСЯ ";
+			 description << u8"Однажды вы шли спокойно по тихой дороге подземелья. НО ТУТ ПОЯВЛЯЕТСЯ ";
 			 switch (enemy->type) {
 			 case BAT:
 				 if (rand() % 2 == 1) {
-					 description << "НЕВЫНОСИМАЯ ЛЕТУЧАЯ МЫШЬ";
+					 description << u8"НЕВЫНОСИМАЯ ЛЕТУЧАЯ МЫШЬ";
 					 enemy->hp = rand()%10 + 10;
 				 }
 				 else {
-					 description << "ЛЕТУЧАЯ МЫШЬ-ПЕРЕКАЧ. Удачи вам сбежать от неё! Если доживёте конечно...";
+					 description << u8"ЛЕТУЧАЯ МЫШЬ-ПЕРЕКАЧ. Удачи вам сбежать от неё! Если доживёте конечно...";
 					 enemy->hp = rand() % 20 + 20;
 				 }
-			 }
+				 break;
+			 case ICE_GOLEM:
+				 description << u8"ЛЕДЕНЮЩИЙ ЛЕДЯНОЙ ГОЛЕМ";
+				 enemy->hp = rand() % 9 + 15;
+				 break;
+			 case ORK:
+				 if (rand() % 4 == 1) {
+					 description << u8"орк,который ругается матом.Кого-то он вам напоминает...";
+				 }
+				 else {
+					 description << u8"ЗЕЛЁНЫЙ И ГРЯЗНЫЙ ОРК";
+				 }
+				 enemy->hp = rand() % 15 + 15;
+				 break;
 
+			 case ZOMBIE:
+				 if (rand() % 4 == 1) {
+					 description << u8"зомби с квадратной головой(???). Он идёт прямо на вас,циклично издавая звуки,похожие на вздох";
+				 }
+				 else {
+					 description << u8"ЗАГНИВАЮЩИЙ НА ХОДУ ЗОМБИ. ОН ТАК И НОРОВИТ ВАС ЗАРАЗИТЬ!!!!";
+				 }
+				 enemy->hp = 20;
+				 break;
+
+			 case SKELETON:
+				 if (rand() % 4 == 1) {
+					 description << u8"скелет с квадратной головой(???). Он идёт прямо на вас,циклично издавая звуки,похожие на хруст костей";
+				 }
+				 else {
+					 description << u8"СКЕЛЕТ. О УЖАС, ОН ИДЁТ ПРЯМО НА ВАС!!!";
+				 }
+				 break;
+
+			 case THEBOSS:
+				 description << u8"ОГРОМНОЕ МОХНАТОЕ НЕЧТО С ЩУПАЛЬЦАМИ. НАДЕЙТЕСЬ, ЧТО ЭТО НЕ КТУЛХУ!!!!";
+				 enemy->hp = 100;
+				 break;
+
+			 }
+			 std::cout << description.str();
+			 bm.enemy = enemy;
+			 player.ready = false;
+			 player.canMove = false;
+			 player.battlemode = true;
+			 std::this_thread::sleep_for(std::chrono::seconds(1));
+			 clear();
+			 bm.InitializeUI();
+			 player.ready = true;
 		 }
 
 	 }

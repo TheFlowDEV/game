@@ -41,10 +41,12 @@ Weapon::Weapon(TYPES type,bool start):MainWeapon(type) {
 		else this->Damage = 1;
 		break;
 	}
+	isDefined = true;
 }
 Shield::Shield(bool start) :MainWeapon(SHIELD) {
 	if (start) this->Defense = rand() % 20;
 	else this->Defense = 2;
+	isDefined = true;
 }
 
 SecondaryWeapon::SecondaryWeapon(ACTIONS type,int action_value) {
@@ -58,4 +60,7 @@ SecondaryWeapon::SecondaryWeapon()
 }
 bool SecondaryWeapon::AreYouExist() {
 	return this->IsDefined;
+}
+void SecondaryWeapon::Drop() {
+	this->IsDefined = false;
 }

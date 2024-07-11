@@ -9,6 +9,7 @@
 #include <ctime>
 #include <map>
 #include "Map.h"
+#include "BattleManager.h"
 #include "Player.h"
 #include "Enemy_Thread_Handler.h"
 #include "ConsoleFunctions.h"
@@ -16,16 +17,16 @@
 std::mutex console_mutex;
 #pragma comment(lib, "Winmm.lib")
 
-enum NXT_ACTIONS{BATTLE,NEXT_ETAGE};
 void draw_frame(short x,short y);
 void draw_frame(short x, short y,MainWeapon* weapon);
 void draw_frame(short x, short y, SecondaryWeapon* weapon);
 class Game
 {
 private:
-	std::map<std::string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false},{"inventory",false} };
+	std::map<std::string, bool> emitter{ {"special",false},{"chest",false},{"regen",false},{"exit",false},{"shop",false},{"inventory",false},{"battle_end",false} };
 	std::map<std::string, std::pair<int, int>>coords_emitter{ {"chest",{0,0}}};
-	Player player = Player(console_mutex,emitter,coords_emitter);
+	BattleManager bm = BattleManager(player);
+	Player player = Player(console_mutex,emitter,coords_emitter,bm);
 	int current_etage = 0;
 	Map map = Map(current_etage);
 	long long seed;

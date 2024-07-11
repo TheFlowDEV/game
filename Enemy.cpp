@@ -54,4 +54,108 @@ std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
 
 }
 std::pair<int, int> Enemy::get_coords() { return (this->coords); }
-
+bool Enemy::GetDamageByPotion(int damage) {
+    this->hp -= damage * 2;
+    if (hp <= 0) return true;
+    else return false;
+}
+int Enemy::UseDamage(int turn) {
+    if (turn % 3 == 0) {
+        switch (type) {
+        case ICE_GOLEM:
+            return rand() % 6 + 1;
+            break;
+        case ORK:
+            return rand() % 10 + 1;
+            break;
+        case BAT:
+            return rand() % 4 + 1;
+            break;
+        case ZOMBIE:
+            return rand() % 7 + 1;
+            break;
+        case SKELETON:
+            return rand() % 5 + 1;
+            break;
+        case THEBOSS:
+            return rand() % 13 + 1;
+            break;
+        }
+    }
+    else {
+        switch (type) {
+        case ICE_GOLEM:
+            return rand() % 3 + 1;
+            break;
+        case ORK:
+            return rand() % 7 + 1;
+            break;
+        case BAT:
+            return rand() % 2 + 1;
+            break;
+        case ZOMBIE:
+            return rand() % 4 + 1;
+            break;
+        case SKELETON:
+            return rand() % 5 + 1;
+            break;
+        case THEBOSS:
+            return rand() % 8 + 1;
+            break;
+    }
+    }
+}
+bool Enemy::GetDamage(TYPES type_of_weapon,int damage) {
+    switch (type) {
+    case ICE_GOLEM:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 2 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case ORK:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 3 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case BAT:
+        if (type_of_weapon == SWORD) {
+            this->hp -= damage;
+        }
+        else {
+            this->hp -= 2*damage;
+        }
+        break;
+    case ZOMBIE:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 3 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    case SKELETON:
+        if (type_of_weapon == SWORD) {
+            this->hp -= damage;
+        }
+        else {
+            this->hp -=2* damage;
+        }
+        break;
+    case THEBOSS:
+        if (type_of_weapon == SWORD) {
+            this->hp -= 4 * damage;
+        }
+        else {
+            this->hp -= damage;
+        }
+        break;
+    }
+    if (this->hp <= 0) return true;
+    else return false;
+}

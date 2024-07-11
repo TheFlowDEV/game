@@ -12,13 +12,14 @@ class Player;
 class MainWeapon {
 public:
 	TYPES type;
+	bool isDefined = false;
 	MainWeapon(TYPES type);
 	virtual std::pair<TYPES,int> Use() = 0;
 	virtual std::string get_description() = 0;
 	int GET_CLASS();
 	template<class Archive>
 	void serialize(Archive& ar) {
-		ar(type);
+		ar(type,isDefined);
 	}
 };
 class Weapon:public MainWeapon {
@@ -39,11 +40,11 @@ public:
 
 };
 class Shield :public MainWeapon {
-private:
 	//friend class boost::serialization::access;
-	int Defense;
-	
+private:
+
 public:
+	int Defense;
 	template<class Archive>
 	void serialize(Archive& ar) {
 		ar(cereal::base_class<MainWeapon>(this), Defense);
@@ -69,7 +70,7 @@ public:
 	ACTIONS type;
 	SecondaryWeapon(ACTIONS type,int action_value);
 	SecondaryWeapon();
-	int Use(Player* player);
+	void Drop();
 	bool AreYouExist();
 
 };
