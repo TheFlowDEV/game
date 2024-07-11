@@ -605,7 +605,7 @@ void Player::Win() {
 	SetXY(0, 0);
 	std::cout << u8"Вы браво сражались и победили. Поздравляем!";
 	SetXY(0, 1);
-	int old_level = exp / 20;
+	int old_level = exp / 50;
 	int exp = rand() % 20 + 1;
 	int money = rand() % 40 + 2;
 	level = (this->exp / 50);
