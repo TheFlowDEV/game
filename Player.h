@@ -24,12 +24,6 @@ private:
 	Map* mapGen;
 	std::map<std::string, bool>& emitter;
 	std::map<std::string, std::pair<int, int>>& coords_emitter;
-
-	std::unique_ptr<MainWeapon> first_weapon;
-	std::unique_ptr<MainWeapon> second_weapon;
-	std::unique_ptr<MainWeapon> third_weapon;
-	SecondaryWeapon fs_weapon;
-	SecondaryWeapon ss_weapon;
 	
 
 	
@@ -42,7 +36,13 @@ private:
 	void Move(Moves move);
 	
 public:
-	int exp = 0, hp = 20, money = 0;
+	std::unique_ptr<MainWeapon> first_weapon;
+	std::unique_ptr<MainWeapon> second_weapon;
+	std::unique_ptr<MainWeapon> third_weapon;
+	SecondaryWeapon fs_weapon;
+	SecondaryWeapon ss_weapon;
+
+	int exp = 0, hp = 20, money = 999;
 
 	int level = 0;
 

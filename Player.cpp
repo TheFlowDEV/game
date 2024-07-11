@@ -224,6 +224,7 @@ void Player::HandleKeyboardEvents() {
 						std::cout << u8"Использовать главное оружие";
 						break;
 					case 1:
+
 						SetXY(0, 1);
 						SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
 						std::cout << u8"Использовать второстепенное оружие";
@@ -598,6 +599,7 @@ void Player::GetDamage(int damage) {
 
 }
 void Player::Win() {
+	bm.choice = 0;
 	ready = false;
 	clear();
 	mciSendString(TEXT("stop battle"), NULL, 0, NULL);
@@ -622,6 +624,7 @@ void Player::Win() {
 
 }
 void Player::run_from_battle() {
+	bm.choice = 0;
 	ready = false;
 	emitter["battle_end"] = true;
 	emitter["special"] = true;

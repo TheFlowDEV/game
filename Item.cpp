@@ -1,6 +1,7 @@
 #include "Item.h"
 #include <string>
 MainWeapon::MainWeapon(TYPES type) {
+	item_type = MAIN_WEAPON;
 	this->type = type;
 }
 
@@ -51,16 +52,17 @@ Shield::Shield(bool start) :MainWeapon(SHIELD) {
 
 SecondaryWeapon::SecondaryWeapon(ACTIONS type,int action_value) {
 	this->type = type;
-	this->IsDefined = true;
+	item_type = SECOND_WEAPON;
+	this->isDefined = true;
 	this->action_value = action_value;
 }
 SecondaryWeapon::SecondaryWeapon()
 {
-	this->IsDefined = false;
+	this->isDefined = false;
 }
 bool SecondaryWeapon::AreYouExist() {
-	return this->IsDefined;
+	return this->isDefined;
 }
 void SecondaryWeapon::Drop() {
-	this->IsDefined = false;
+	this->isDefined = false;
 }

@@ -202,7 +202,7 @@ void Map::CreateRoomContents(std::vector<std::vector<char>>& map) {
                 }
                 else {
                     if (current_etage == 6 && !boss_exists) {
-                        room->generate(false, chest, enemy, map_ptr,true);
+                        room->generate(false, chest, true, map_ptr,true);
                         boss_exists = true;
                     }
                     else {
@@ -222,7 +222,10 @@ void Map::CreateRoomContents(std::vector<std::vector<char>>& map) {
                         if (map[enemy_coord.second][enemy_coord.first] == 'R') {
                             enemy_coord.second++;
                         }
-                        map[enemy_coord.second][enemy_coord.first] = 'E';
+                        if (enemy->type == THEBOSS) {
+                            map[enemy_coord.second][enemy_coord.first] = 'B';
+                        }
+                        else map[enemy_coord.second][enemy_coord.first] = 'E';
                         
                     }
                 }

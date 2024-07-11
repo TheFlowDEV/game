@@ -7,22 +7,29 @@
 
 enum TYPES { SWORD, BOW,SHIELD};
 enum ACTIONS {HEAL,DAMAGE,RAISE_CHARACTERISTICS,RANDOM};
-
+enum ITEM_TYPE {MAIN_WEAPON,SECOND_WEAPON};
 class Player;
 class Item {
-
+public:
+	virtual ~Item() = default;
+	int cost = 0;
+	ITEM_TYPE item_type;
+	bool isDefined = false;
+	template<class Archive>
+	void serialize(Archive& ar) {
+		ar(isDefined);
+	}
 };
-class MainWeapon:Item {
+class MainWeapon: public Item {
 public:
 	TYPES type;
-	bool isDefined = false;
 	MainWeapon(TYPES type);
 	virtual std::pair<TYPES,int> Use() = 0;
 	virtual std::string get_description() = 0;
 	int GET_CLASS();
 	template<class Archive>
 	void serialize(Archive& ar) {
-		ar(type,isDefined);
+		ar(cereal::base_class<Item>(this),type);
 	}
 };
 class Weapon:public MainWeapon {
@@ -59,15 +66,12 @@ public:
 	std::string get_description();
 
 };
-class SecondaryWeapon:Item {
-private:
+class SecondaryWeapon:public Item {
 	//friend class boost::serialization::access;
-	bool IsDefined;
-	
 public:
 	template<class Archive>
 	void serialize(Archive& ar) {
-		ar(IsDefined, type, action_value);
+		ar(cereal::base_class<Item>(this),type, action_value);
 	};
 	int action_value;
 	ACTIONS type;
