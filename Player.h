@@ -77,6 +77,7 @@ public:
 	void GetDamage(int damage);
 	void Win();
 	void run_from_battle();
+	void reinitialize();
 };
 //BOOST_CLASS_IMPLEMENTATION(Player, boost::serialization::level_type::object_serializable)
 

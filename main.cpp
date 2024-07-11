@@ -359,18 +359,21 @@ void Game::draw_game(bool first_start=true) {
 				 clear();
 				 if (rand() % 2 == 0) {
 					 TYPES type = static_cast<TYPES>(rand() % 3);
-					 std::unique_ptr<MainWeapon>wp = nullptr;
+					 Item* wp = nullptr;
 					 if (type == SHIELD) {
-						 wp = std::make_unique<Shield>(Shield(false));
+						 wp = (new Shield(false));
 					 }
 					 else {
-						 wp = std::make_unique<Weapon>(Weapon(type, false));
+						 wp = (new Weapon(type, false));
 					 }
-					 SetXY(map.map_width - 5, 0); draw_frame(map.map_width - 5, 0, wp.get());
+					 ChangeInventory(wp);
 				 }
 			 
 			 else {
 				 ACTIONS type = static_cast<ACTIONS>(rand() % 4);
+				 Item* wp = nullptr;
+				 wp = new SecondaryWeapon(type, rand() % 30);
+				 ChangeInventory(wp);
 			 }
 				 map.generated_map[coords_emitter["chest"].second][coords_emitter["chest"].first] = '.';
 				 coords_emitter["chest"] = { 0,0 };
@@ -1084,6 +1087,8 @@ void Game::redraw_start_screen(int choose) {
 						break;
 					case 1:
 						LoadShouldShow = false;
+						this->current_etage = 0;
+						player.reinitialize();
 						save_game();
 						break;
 					}
@@ -1112,8 +1117,6 @@ void Game::ChangeInventory(Item* item) {
 	int choice = 0;
 	SetXY(0, 0);
 	std::cout << u8"Главные оружия";
-	SetXY(30, 0);
-	std::cout << shop.GetDescription(item);
 	if (item->item_type == MAIN_WEAPON) {
 		SetXY(30, 5);
 		std::cout << "<-";
@@ -1129,6 +1132,11 @@ void Game::ChangeInventory(Item* item) {
 	std::cout << u8"Второстепенные предметы";
 	draw_frame(50, 2, &player.fs_weapon);
 	draw_frame(50, 11, &player.ss_weapon);
+	
+	SetXY(56, 27);
+	std::cout << u8"Вы получили " << shop.GetDescription(item)<<"\n\n";
+	SetXY(15, 33);
+	std::cout << u8"Нажмите ESC,чтобы отказаться от всех изменений";
 	bool HasNotChanged = false;
 	while (!HasNotChanged) {
 		if (_kbhit()) {
@@ -1147,6 +1155,7 @@ void Game::ChangeInventory(Item* item) {
 						SetXY(30, 24);
 						std::cout << "  ";
 						break;
+					
 					}
 					if (choice == 0) choice = 2;
 					else choice--;
@@ -1181,6 +1190,7 @@ void Game::ChangeInventory(Item* item) {
 						SetXY(30, 24);
 						std::cout << "  ";
 						break;
+					
 					}
 					if (choice == 2) choice = 0;
 					else choice++;
@@ -1247,6 +1257,10 @@ void Game::ChangeInventory(Item* item) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
+				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+					HasNotChanged = true;
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				}
 			}
 
 			else {
@@ -1260,8 +1274,12 @@ void Game::ChangeInventory(Item* item) {
 						SetXY(77, 16);
 						std::cout << "  ";
 						break;
+					case 2:
+						SetXY(30, 33);
+						std::cout << "  ";
+						break;
 					}
-					if (choice == 0) choice = 1;
+					if (choice == 0) choice = 2;
 					else choice--;
 					switch (choice) {
 					case 0:
@@ -1270,6 +1288,10 @@ void Game::ChangeInventory(Item* item) {
 						break;
 					case 1:
 						SetXY(77, 16);
+						std::cout << "<-";
+						break;
+					case 3:
+						SetXY(20, 33);
 						std::cout << "<-";
 						break;
 					}
@@ -1286,8 +1308,12 @@ void Game::ChangeInventory(Item* item) {
 						SetXY(77, 16);
 						std::cout << "  ";
 						break;
+					case 2:
+						SetXY(30, 33);
+						std::cout << "  ";
+						break;
 					}
-					if (choice == 1) choice = 0;
+					if (choice == 2) choice = 0;
 					else choice++;
 					switch (choice) {
 					case 0:
@@ -1296,6 +1322,10 @@ void Game::ChangeInventory(Item* item) {
 						break;
 					case 1:
 						SetXY(77, 16);
+						std::cout << "<-";
+						break;
+					case 2:
+						SetXY(20, 33);
 						std::cout << "<-";
 						break;
 					}
@@ -1311,13 +1341,20 @@ void Game::ChangeInventory(Item* item) {
 					case 1:
 						player.ss_weapon = *(static_cast<SecondaryWeapon*>(item));
 						break;
-
+					case 2:
+						HasNotChanged = true;
+						break;
 					}
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 					HasNotChanged = true;
 				}
+				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+					HasNotChanged = true;
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				}
 			}
+
 
 		}
 	}

@@ -45,8 +45,8 @@ Weapon::Weapon(TYPES type,bool start):MainWeapon(type) {
 	isDefined = true;
 }
 Shield::Shield(bool start) :MainWeapon(SHIELD) {
-	if (start) this->Defense = rand() % 20;
-	else this->Defense = 2;
+	if (start)  this->Defense = 2;
+	else this->Defense = rand() % 20 + 2;
 	isDefined = true;
 }
 

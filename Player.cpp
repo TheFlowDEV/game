@@ -598,6 +598,21 @@ void Player::GetDamage(int damage) {
 	}
 
 }
+void Player::reinitialize() {
+	first_weapon = std::make_unique<Weapon>(Weapon(SWORD, true));
+	second_weapon = std::make_unique<Weapon>(Weapon(BOW, true));
+	third_weapon = std::make_unique<Shield>(Shield(true));
+	fs_weapon = SecondaryWeapon(RANDOM, 10);
+	exp = 0;
+	level = 0;
+	hp = 20;
+	attack = 2;
+	defense = 1;
+	dexterity = 3;
+	ss_weapon = SecondaryWeapon();
+	battlemode = false;
+
+}
 void Player::Win() {
 	bm.choice = 0;
 	ready = false;
