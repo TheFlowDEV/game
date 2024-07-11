@@ -248,9 +248,13 @@ void Player::HandleKeyboardEvents() {
 						SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 						std::cout << GetWeaponDescription(&ss_weapon);
 						break;
-
+					case 2:
+						SetXY(0, 2);
+						SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+						std::cout << u8"Назад";
+						break;
 					}
-					if (bm.choice == 0) bm.choice = 1;
+					if (bm.choice == 0) bm.choice = 2;
 					else bm.choice--;
 					switch (bm.choice) {
 					case 0:
@@ -262,6 +266,11 @@ void Player::HandleKeyboardEvents() {
 						SetXY(0, 1);
 						SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
 						std::cout << GetWeaponDescription(&ss_weapon);
+						break;
+					case 2:
+						SetXY(0, 2);
+						SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+						std::cout << u8"Назад";
 						break;
 					}
 				}
@@ -400,9 +409,14 @@ void Player::HandleKeyboardEvents() {
 						SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 						std::cout << GetWeaponDescription(&ss_weapon);
 						break;
+					case 2:
+						SetXY(0, 2);
+						SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+						std::cout << u8"Назад";
+						break;
 					
 					}
-					if (bm.choice == 1) bm.choice = 0;
+					if (bm.choice == 2) bm.choice = 0;
 					else bm.choice++;
 					switch (bm.choice) {
 					case 0:
@@ -414,6 +428,11 @@ void Player::HandleKeyboardEvents() {
 						SetXY(0, 1);
 						SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
 						std::cout << GetWeaponDescription(&ss_weapon);
+						break;
+					case 2:
+						SetXY(0, 2);
+						SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
+						std::cout << u8"Назад";
 						break;
 					}
 				}
@@ -445,10 +464,13 @@ void Player::HandleKeyboardEvents() {
 						bm.menu = SECONDARYWEAPON;
 						
 						clear();
+						bm.choice = 0;
 						SetXY(0, 0);
 						std::cout << GetWeaponDescription(&fs_weapon);
 						SetXY(0, 1);
 						std::cout << GetWeaponDescription(&ss_weapon);
+						SetXY(0, 2);
+						std::cout << u8"Назад";
 						break;
 					}
 					case 2:
@@ -518,6 +540,11 @@ void Player::HandleKeyboardEvents() {
 							}
 						}
 						break;
+					case 2:
+						bm.menu = MAIN;
+						bm.choice = 0;
+						clear();
+						bm.InitializeUI();
 					}
 				}
 				HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -539,9 +566,9 @@ bool Player::shouldntStop() {
 	return false;
 }
 void Player::LevelUp() {
-	dexterity += rand() % 5 + 1;
-	attack += rand() % 3 + 1;
-	defense += rand() % 7 + 1;
+	dexterity += rand() % 2 + 1;
+	attack += rand() % 4 + 1;
+	defense += rand() % 3 + 1;
 }
 
 bool Player::EnemyNearThePlayer() {

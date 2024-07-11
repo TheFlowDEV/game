@@ -42,11 +42,16 @@ bool BattleManager::use_mainweapon(MainWeapon* weapon) {
 	}
 	else {
 		int old_hp = enemy->hp;
-		defeat = enemy->GetDamage(weapon->type, reinterpret_cast<Weapon*>(weapon)->Use().second);
+		defeat = enemy->GetDamage(weapon->type, reinterpret_cast<Weapon*>(weapon)->Use().second+player.attack/2);
 		SetXY(0, 5);
 		std::cout << u8"Врагу нанесли " << old_hp - enemy->hp << u8" единиц урона";
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		if (defeat) {
+			if (old_attack != 0) {
+				player.attack = old_attack;
+				player.dexterity = old_dexterity;
+				player.defense = old_defense;
+			}
 			player.Win();
 			return true;
 		}
@@ -69,6 +74,11 @@ bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 		defeat = enemy->GetDamageByPotion(weapon.action_value);
 		break;
 	case RAISE_CHARACTERISTICS:
+		
+		old_attack = player.attack;
+		old_dexterity = player.dexterity;
+		old_defense = player.defense;
+		
 		player.attack += weapon.action_value;
 		player.dexterity += weapon.action_value;
 		player.defense += weapon.action_value;
@@ -92,6 +102,9 @@ bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 			break;
 		}
 		case 2:
+			old_attack = player.attack;
+			old_dexterity = player.dexterity;
+			old_defense = player.defense;
 			player.attack += weapon.action_value;
 			player.dexterity += weapon.action_value;
 			player.defense += weapon.action_value;
@@ -102,14 +115,17 @@ bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 	weapon.Drop();
 
 	if (defeat) {
+		if (old_attack != 0) {
+			player.attack = old_attack;
+			player.dexterity = old_dexterity;
+			player.defense = old_defense;
+		}
 		player.Win();
 		return true;
 	}
 	else {
 		draw_player_stats();
 		draw_enemy_stats();
-		turn++;
-		enemy_turn();
 		return false;
 	}
 }

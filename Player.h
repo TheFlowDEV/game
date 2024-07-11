@@ -46,9 +46,9 @@ public:
 
 	int level = 0;
 
-	int attack = 5;// атака
-	int defense = 5; // защита
-	int dexterity = 5; // ловкость
+	int attack = 2;// атака
+	int defense = 1; // защита
+	int dexterity = 3; // ловкость
 
 	template<class Archive>
 	void serialize(Archive& ar) {

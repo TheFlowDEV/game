@@ -63,44 +63,44 @@ int Enemy::UseDamage(int turn) {
     if (turn % 3 == 0) {
         switch (type) {
         case ICE_GOLEM:
-            return rand() % 6 + 1;
+            return rand() % 6 + 4;
             break;
         case ORK:
-            return rand() % 10 + 1;
+            return rand() % 10 + 5;
             break;
         case BAT:
-            return rand() % 4 + 1;
+            return rand() % 4 + 6;
             break;
         case ZOMBIE:
-            return rand() % 7 + 1;
+            return rand() % 7 + 5;
             break;
         case SKELETON:
-            return rand() % 5 + 1;
+            return rand() % 5 + 7;
             break;
         case THEBOSS:
-            return rand() % 13 + 1;
+            return rand() % 13 + 8;
             break;
         }
     }
     else {
         switch (type) {
         case ICE_GOLEM:
-            return rand() % 3 + 1;
+            return rand() % 5 + 4;
             break;
         case ORK:
-            return rand() % 7 + 1;
+            return rand() % 7 + 4;
             break;
         case BAT:
-            return rand() % 2 + 1;
+            return rand() % 4 + 4;
             break;
         case ZOMBIE:
-            return rand() % 4 + 1;
+            return rand() % 4 + 4;
             break;
         case SKELETON:
-            return rand() % 5 + 1;
+            return rand() % 5 + 4;
             break;
         case THEBOSS:
-            return rand() % 8 + 1;
+            return rand() % 8 + 4;
             break;
     }
     }
