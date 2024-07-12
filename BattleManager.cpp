@@ -6,7 +6,7 @@ BattleManager::BattleManager(Player& players):player(players) {
 }
 void BattleManager::enemy_turn() {
 	if (turn % 2 == 1) {
-		player.GetDamage(enemy->UseDamage(turn)-defense_count);
+		player.GetDamage(enemy->UseDamage(turn) - defense_count <= 0 ? 0: enemy->UseDamage(turn) - defense_count);
 		defense_count = 0;
 		if (used_secondary) {
 			player.dexterity = old_dexterity;

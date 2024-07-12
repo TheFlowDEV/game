@@ -1,10 +1,11 @@
 ﻿#include "Main.h"
 #include <sstream>
-
+#include "versionhelpers.h"
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
 #define DEBUG false
 HWND window;
+
 std::string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void draw_frame(short x,short y) {
 	short ix = x;
@@ -301,7 +302,8 @@ void Game::draw_game(bool first_start=true) {
 			 case 'E':
 				 SetXY(i, j);
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
-				 std::cout << u8"🕱";
+				 if (IsWindows11()) std::cout << u8"🕱";
+				 else std::cout << "E";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
 			 case 'B':
@@ -844,7 +846,8 @@ void Game::redraw_map(bool regenerate) {
 			case 'E':
 				SetXY(i, j);
 				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
-				std::cout << u8"🕱";
+				if (IsWindows11()) std::cout << u8"🕱";
+				else std::cout << "E";
 				SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				break;
 			case '#':
@@ -964,6 +967,7 @@ void Game::redraw_start_screen(int choose) {
 	{
 		while (true) {
 			if (!game_started) {
+				
 				SetConsoleCP(CP_UTF8); SetConsoleOutputCP(CP_UTF8);
 
 				// Титульник(введение,название игры)
@@ -1358,4 +1362,5 @@ void Game::ChangeInventory(Item* item) {
 
 		}
 	}
+	clear();
 }

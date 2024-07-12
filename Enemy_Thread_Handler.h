@@ -11,6 +11,7 @@ private:
     
     std::mutex& console_mutex;
     bool stopMoving_cond=false;
+    bool Windows11 = IsWindows11();
 public:
     EnemyThreadHandler(Map* mapgen, std::mutex& console_mutexss);
     void handle_enemies(std::pair<int, int>& ptr_to_player_coords);
