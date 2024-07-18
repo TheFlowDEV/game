@@ -21,6 +21,8 @@ std::string Shield::get_description() {
 }
 int MainWeapon::GET_CLASS()
 {
+	//0 - класс Weapon
+	//1 - класс Shield
 	switch (this->type) {
 	case SWORD:
 		return 0;

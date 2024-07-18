@@ -3,7 +3,7 @@
 void Shop::SetSeed(long long seed) {
 	this->seed = seed;
 }
-Item* Shop::Buy(int choice) {
+Item* Shop::Buy(int choice) {// ПОКУПКА
 	switch (choice) {
 	case 0:
 		return first_item;
@@ -14,6 +14,7 @@ Item* Shop::Buy(int choice) {
 	}
 }
 void Shop::Generate() {
+	//ГЕНЕРАЦИЯ ПРЕДМЕТОВ
 	if (last_etage_generated != current_etage) {
 		last_etage_generated = current_etage;
 		
@@ -54,6 +55,7 @@ Item* Shop::GenerateItem() {
 	}
 }
 std::string Shop::GetDescription(Item* item) {
+	//описание для предметов
 	if (item == nullptr) {
 		return u8"Пустая клетка";
 	}
@@ -109,9 +111,9 @@ std::string Shop::GetDescription(Item* item) {
 		}
 	}
 }
-Shop::Shop(int& cur_et):current_etage(cur_et) {
+Shop::Shop(int& cur_et):current_etage(cur_et) { // конструктор
 }
-void Shop::Clear()
+void Shop::Clear()//очищение магазина
 {
 	delete first_item;
 	delete second_item;

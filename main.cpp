@@ -1,12 +1,13 @@
 ﻿#include "Main.h"
 #include <sstream>
 #include "versionhelpers.h"
-HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
-HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
-#define DEBUG false
-HWND window;
-
-std::string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
+//Примечание
+//Координата Y считается сверху вниз
+//Комментарии о входных параметрах функций и о самом назначении функции находятся в заголовочном файле для соотвествующих файлов cpp 
+HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);// Обработчик вывода консоли
+HWND window; // Обработчик консольного окна
+// Переменная для стартового окна
+const std::string start_screen = u8"*************************************************************\n*                                                           *\n*                                                           *\n*                      Живые клетки                         *\n*                                                           *\n*                                                           *\n*                                                           *\n*************************************************************";
 void draw_frame(short x,short y) {
 	short ix = x;
 	SetXY(ix, y);
@@ -255,96 +256,96 @@ void Game::ShowRecords() {
 		}
 
 	}
-void Game::draw_game(bool first_start=true) {
+void Game::draw_game() {
 	game_started = true;
 	mciSendString(TEXT("stop intro"), NULL, 0, NULL);
 	mciSendString(TEXT("close intro"), NULL, 0, NULL);
 
-	if (first_start) {
-		shop.SetSeed(seed);
-	}
-	mciSendString(TEXT("open \"hodim.mp3\" type mpegvideo alias hodim"), NULL, 0, NULL);
+	shop.SetSeed(seed);//ставим семя магазину для генерации вещей
+	mciSendString(TEXT("open \"hodim.mp3\" type mpegvideo alias hodim"), NULL, 0, NULL); // музыка для той части игры, где игрок перемещается по карте
 	mciSendString(TEXT("play hodim repeat"), NULL, 0, NULL);
 	mciSendStringA("setaudio hodim volume to 700", nullptr, 0, nullptr);
 
 	
 
-	if (first_start) map.generate();
-	else map.generate(true);
-
+	map.generate(); // генерация карты
+	//отрисовка
 	 for (int i = 0; i < map.map_width; i++) {
 		 for (int j = 0; j < map.map_height; j++) {
 			 switch (map.generated_map[j][i]) {
-			 case 'R':
-				 SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15));
+			 case 'R'://Выход
+				 SetConsoleTextAttribute(hout, (WORD)(2 << 4 | 15)); // меняем фон текста на зелёный
 				 SetXY(i, j);
 				 std::cout << map.generated_map[j][i];
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));// меняем фон текста на чёрный 
 				 break;
-			 case '$':
+			 case '$'://Сундук
 				 SetXY(i, j);
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 14));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 14));// меняем цвет текста на жёлтый
 				 std::cout << '$';
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15)); // меняем цвет текста на белый
 				 break;
-			 case 'S':
+			 case 'S'://Магазин
 				 SetXY(i, j);
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 3));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 3)); // меняем цвет текста на голубой
 				 std::cout << "S";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-			 case '#':
+			 case '#'://Стена
 				 SetXY(i, j);
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 8));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 8));// меняем цвет текста на жёлтый
 				 std::cout << u8"▒";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-			 case 'E':
+			 case 'E'://Враг
 				 SetXY(i, j);
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));// меняем цвет текста на красный
 				 if (IsWindows11()) std::cout << u8"🕱";
 				 else std::cout << "E";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-			 case 'B':
+			 case 'B'://Босс
 				 SetXY(i, j);
-				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));
+				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 4));// меняем цвет текста на красный
 				 std::cout << "B";
 				 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				 break;
-			 default:
+			 default://Остальные символы
 				 SetXY(i, j);
 				 std::cout << map.generated_map[j][i];
 				 break;
 			 }
 		 }
 	 }
-	 std::pair<int, int> player_coords;
+	 std::pair<int, int> player_coords;// координаты игрока
 	 
 	 player_coords = map.spawn_player();
 	 player.UpdateMap(&map, &player_coords); 
+	 //рисуем HUD
 	 SetXY(0, map.map_height + 1);
 	 std::stringstream HUD;
 	 HUD << u8"ИНВЕНТАРЬ[I] ";
 	 HUD << u8"АТК/ЛВК/ЗАЩ:" << player.attack << "/" << player.dexterity << "/" << player.defense << " ";
 	 HUD << u8"ОЗ:" << player.hp << " " << u8"ДЕНЬГИ:" << player.money << u8" ЭТАЖ:" << this->current_etage;;
 	 std::cout << HUD.str();
+	 //Запускаем поток для противников
 	 EnemyThreadHandler enemy_thread_handler = EnemyThreadHandler(&map,console_mutex);
 	 std::thread enemy_thread(&EnemyThreadHandler::handle_enemies, &enemy_thread_handler, std::ref(*(player.player_coords)));
-	 bool needStop = false;
-	 bool win_game = false;
+	 bool needStop = false;//Условие для остановки игрового цикла
+	 bool win_game = false;//Условие победы в игре
+	 //смотрите определение в Player.h
 	 player.canMove = true;
 	 player.ready = true;
-
+	 //Основной игровой цикл
 	 while (!needStop) {
-		 if (_kbhit() && GetForegroundWindow()==window) {
+		 if (_kbhit() && GetForegroundWindow()==window) { // если окно в фокусе и нажатие по клавиатуре произошло
 			 player.HandleKeyboardEvents();
 		 }
-		 if (emitter["special"]) {
+		 if (emitter["special"]) {//если произошло специальное событие
 			 enemy_thread_handler.stopMoving();
 			 player.ready = false;
 			 player.canMove = false;
-			 if (emitter["regen"]) {
+			 if (emitter["regen"]) {// РЕГЕНЕРАЦИЯ КАРТЫ(ИГРОК НАШЁЛ ВЫХОД)
 				 current_etage++;
 				 shop.Clear();
 				 save_game();
@@ -357,7 +358,7 @@ void Game::draw_game(bool first_start=true) {
 				 enemy_thread_handler.startMoving();
 
 			 }
-			 else if (emitter["chest"]) {
+			 else if (emitter["chest"]) {// ИГРОК НАШЁЛ СУНДУК
 				 clear();
 				 if (rand() % 2 == 0) {
 					 TYPES type = static_cast<TYPES>(rand() % 3);
@@ -387,7 +388,7 @@ void Game::draw_game(bool first_start=true) {
 				 enemy_thread_handler.startMoving();
 
 			 }
-			 else if (emitter["shop"]) {
+			 else if (emitter["shop"]) {//Игрок нашёл магазин
 				 clear();
 				 bool LeaveShop = false;
 				 int choice = 0;
@@ -402,9 +403,9 @@ void Game::draw_game(bool first_start=true) {
 				 std::cout << shop.GetDescription(shop.third_item);
 				 SetXY(0, 3);
 				 std::cout << u8"Выход";
-				 while (!LeaveShop) {
+				 while (!LeaveShop) { // основной цикл внутри магазина(выбор)
 					 if (_kbhit()) {
-						 if (GetAsyncKeyState(VK_UP) & 0x8000) {
+						 if (GetAsyncKeyState(VK_UP) & 0x8000) {//Вверх
 							 switch (choice) {
 							 case 0:
 								 SetXY(0, 0);
@@ -454,7 +455,7 @@ void Game::draw_game(bool first_start=true) {
 							 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
 							 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 						 }
-						 else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+						 else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {//Вниз
 							 switch (choice) {
 							 case 0:
 								 SetXY(0, 0);
@@ -504,18 +505,19 @@ void Game::draw_game(bool first_start=true) {
 							 std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
 							 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 						 }
-						 else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+						 else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {//Клавиша enter
 							 switch (choice) {
 							 case 0:{
-								 if (shop.first_item->isDefined && shop.first_item->cost <= player.money) {
+								 if (shop.first_item->isDefined && shop.first_item->cost <= player.money) {// если предмет определён и у игрока хватает денег купить его
 									 clear();
 									 player.money -= shop.first_item->cost;
 									 std::this_thread::sleep_for(std::chrono::milliseconds(100));
 									 SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
-									 ChangeInventory((shop.Buy(0)));
-									 shop.first_item->isDefined = false;
+									 ChangeInventory((shop.Buy(0)));//Отрисовка окна изменения инвентарь
+									 shop.first_item->isDefined = false;//предмет теперь не определён
 
 									 clear();
+									 //возврат к главному меню магазина
 									 SetXY(0, 0);
 									 SetConsoleTextAttribute(hout, 8 << 4 | 15);
 									 std::cout << shop.GetDescription(shop.first_item);
@@ -588,6 +590,7 @@ void Game::draw_game(bool first_start=true) {
 						 }
 					 }
 				 }
+				 //перерисовка карты
 				 emitter["special"] = false;
 				 emitter["shop"] = false;
 				 redraw_map(false);
@@ -596,21 +599,25 @@ void Game::draw_game(bool first_start=true) {
 				 enemy_thread_handler.startMoving();
 			 }
 			 else if (emitter["exit"]) {
+				 //выход из игры
 				 needStop = true;
 			 }
 			 else if (emitter["inventory"]) {
+				 //игрок заглянул в инвентарь
 				 enemy_thread_handler.stopMoving();
 				 player.canMove = false;
 				 clear();
 				 emitter["special"] = false;
 				 emitter["inventory"] = false;
 				 if (!player.lookinventory) {
+					 //перерисовка карты
 					 redraw_map(false);
 					 player.canMove = true;
 					 player.ready = true;
 					 enemy_thread_handler.startMoving();
 				 }
 				 else {
+					 //отрисовка инвентаря
 					 SetXY(0,0);
 					 std::cout << u8"Главные оружия";
 					 draw_frame(0, 1,player.first_weapon.get());
@@ -628,9 +635,10 @@ void Game::draw_game(bool first_start=true) {
 				 }
 			 }
 			 else if (emitter["battle_end"]) {
+				 //битва кончилась
 				 mciSendString(TEXT("stop battle"), NULL, 0, NULL);
 				 mciSendString(TEXT("close battle"), NULL, 0, NULL);
-
+				 //удаление противника из карты и из комнат игры
 				 map.generated_map[bm.enemy->get_coords().second][bm.enemy->get_coords().first] = '.';
 				 bool havefound = false;
 				 for (auto & i : map.rooms) {
@@ -645,7 +653,7 @@ void Game::draw_game(bool first_start=true) {
 					 if (havefound) break;
 
 				 }
-				 if (bm.enemy->type == THEBOSS) {
+				 if (bm.enemy->type == THEBOSS) { // если противник босс,то игрок победил
 					 win_game = true;
 					 emitter["battle_end"] = false;
 					 emitter["special"] = false;
@@ -653,6 +661,7 @@ void Game::draw_game(bool first_start=true) {
 					 needStop = true;
 				 }
 				 else {
+					 // продолжаем игру
 					 bm.clear_bm();
 					 redraw_map(false);
 					 mciSendString(TEXT("play hodim repeat"), NULL, 0, NULL);
@@ -666,6 +675,7 @@ void Game::draw_game(bool first_start=true) {
 			 }
 		 }
 		 if (player.EnemyNearThePlayer()&& !player.battlemode) {
+			 //игрок столкнулся с противником и он не в режиме битвы
 			 mciSendString(TEXT("stop hodim"), NULL, 0, NULL);
 			 mciSendString(TEXT("open \"battle.mp3\" type mpegvideo alias battle"), NULL, 0, NULL);
 
@@ -674,6 +684,7 @@ void Game::draw_game(bool first_start=true) {
 			 enemy_thread_handler.stopMoving();
 			 player.battlemode = true;
 			 clear();
+			 //ищем противника
 			 std::shared_ptr<Enemy> enemy;
 			 bool havefound = false;
 			 for (auto& i : map.rooms) {
@@ -689,6 +700,7 @@ void Game::draw_game(bool first_start=true) {
 				 if (havefound) break;
 
 			 }
+			 // выводим сообщения о встрече и определяем hp противнику
 			 std::stringstream description;
 			 description << u8"Однажды вы шли спокойно по тихой дороге подземелья. НО ТУТ ПОЯВЛЯЕТСЯ ";
 			 switch (enemy->type) {
@@ -742,20 +754,22 @@ void Game::draw_game(bool first_start=true) {
 
 			 }
 			 std::cout << description.str();
+			 // устанавливаем противника в BattleManager и готовим игрока к битве
 			 bm.enemy = enemy;
 			 player.ready = false;
 			 player.canMove = false;
 			 player.battlemode = true;
 			 std::this_thread::sleep_for(std::chrono::seconds(1));
 			 clear();
-			 mciSendString(TEXT("play battle repeat"), NULL, 0, NULL);
-			 bm.InitializeUI();
+			 mciSendString(TEXT("play battle repeat"), NULL, 0, NULL);// запускаем музыку битвы
+			 bm.InitializeUI();//Инициализируем окно битвы
 			 player.ready = true;
 		 }
 
 	 }
 	 
 	 if (win_game) {
+		 // игрок выиграл игру и видит концовку
 		 clear();
 		 SetXY(0, 0);
 		 std::cout << u8"После битвы с недоКтулху вы проснулись";
@@ -768,6 +782,7 @@ void Game::draw_game(bool first_start=true) {
 		 std::cout << u8"Надо же было такому присниться...";
 		 std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 		 clear();
+		 //запись рекордов
 		 std::ifstream file("records.txt");
 		 int first_place = 0, second_place = 0, third_place = 0;
 		 if (file.is_open()) {
@@ -795,6 +810,7 @@ void Game::draw_game(bool first_start=true) {
 		 file_w << first_place << std::endl;
 		 file_w << second_place << std::endl;
 		 file_w << third_place << std::endl;
+		//игра готовится к следующему перезапуску
 		 map.CleanALL();
 		 enemy_thread_handler.stop();
 		 enemy_thread.join();
@@ -802,7 +818,7 @@ void Game::draw_game(bool first_start=true) {
 
 	}
 	 if (emitter["exit"]) {
-
+		 //игрок захотел выйти из игры
 		 enemy_thread_handler.stop();
 		 enemy_thread.join();
 		 map.CleanALL();
@@ -873,6 +889,7 @@ void Game::redraw_map(bool regenerate) {
 	
 }
 void Game::redraw_start_screen(int choose) {
+	// перерисовка стартового меню после изменения выбора
 		SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 		clear();
 		switch (choose) {
@@ -909,6 +926,7 @@ void Game::redraw_start_screen(int choose) {
 	}
 	
 	void Game::draw_start_screen() {
+		//отрисовка стартового окна
 		SetXY(0, 0);
 		SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));
 		std::cout << u8"1.СТАРТ";
@@ -923,8 +941,8 @@ void Game::redraw_start_screen(int choose) {
 		while (StartShouldShow)
 		{
 			if (_kbhit()) {
-				window = GetForegroundWindow();
-				key = _getch();
+				window = GetForegroundWindow();// получаем окно, которое является терминалом
+				key = _getch();//код нажатой клавиши
 				if (key == 224) {
 					int second_key = _getch();
 					if (second_key == 72) { // стрелка вверх
@@ -938,22 +956,22 @@ void Game::redraw_start_screen(int choose) {
 						redraw_start_screen(choose);
 					}
 				}
-				else if (key == 13 && GetAsyncKeyState(VK_RETURN)&0x8000) {
+				else if (key == 13 && GetAsyncKeyState(VK_RETURN)&0x8000) { // если действительно была нажата клавиша enter
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 
 					switch (choose) {
 					case 0:
-						StartShouldShow = false;
+						StartShouldShow = false;//выходим из стартового меню
 						clear();
 						break;
 					case 1:
 						clear();
-						ShowRecords();
+						ShowRecords();//показываем рекорды
 						redraw_start_screen(choose);
 						break;
 					case 2:
 						clear();
-						exit(0);
+						exit(0);//выходим из игры
 						break;
 					}
 				}
@@ -973,24 +991,24 @@ void Game::redraw_start_screen(int choose) {
 				// Титульник(введение,название игры)
 				SetConsoleTitle(TEXT("Живые клетки"));
 			}
-			mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL);
+			mciSendString(TEXT("open \"intro.mp3\" type mpegvideo alias intro"), NULL, 0, NULL); // музыка
 			mciSendString(TEXT("play intro repeat"), NULL, 0, NULL);
 			mciSendStringA("setaudio intro volume to 80", nullptr, 0, nullptr);
 
 			CONSOLE_CURSOR_INFO     cursorInfo;
 			GetConsoleCursorInfo(hout, &cursorInfo);
-			cursorInfo.bVisible = DEBUG; // видимость курсора
+			cursorInfo.bVisible = false; // убрать видимость курсора
 			SetConsoleCursorInfo(hout, &cursorInfo);
 
-			std::cout << start_screen;
+			std::cout << start_screen;// начальный экран
 			Sleep(1000);
 			clear();
 			// МЕНЮ
 			draw_start_screen();
 			clear();
-			std::ifstream file("player.sav", std::ios::binary);
+			std::ifstream file("player.sav", std::ios::binary); // файл сохранения
 			if (file.is_open()) {
-				load_game_choice(file);
+				load_game_choice(file); // начать новую игру/загрузить старую
 				file.close();
 			}
 			// основная игра
@@ -1000,8 +1018,8 @@ void Game::redraw_start_screen(int choose) {
 	}
 	void Game::load_game(std::ifstream &file) {
 
-			cereal::BinaryInputArchive ia(file);
-			ia(player, this->current_etage);
+		cereal::BinaryInputArchive ia(file);
+		ia(player, this->current_etage);//загружаем игрока и этаж из прошлого сохранения
 	}
 	void Game::load_game_choice(std::ifstream& file) {
 		SetXY(0, 0);
@@ -1082,15 +1100,16 @@ void Game::redraw_start_screen(int choose) {
 						}
 					}
 				}
-				else if (key == 13) {
+				else if (key == 13) {//клавиша enter
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 					switch (choose) {
 					case 0:
 						LoadShouldShow = false;
-						load_game(file);
+						load_game(file);//загружаем сохранения
 						break;
 					case 1:
 						LoadShouldShow = false;
+						//сохранение ненужно, загружаем всё стандартное
 						this->current_etage = 0;
 						player.reinitialize();
 						save_game();
@@ -1105,6 +1124,7 @@ void Game::redraw_start_screen(int choose) {
 	
 
 	void Game::save_game() {
+		//сохранение игрока и этажа в player.sav
 		std::ofstream ofs("player.sav", std::ios::binary);
 		cereal::BinaryOutputArchive oa(ofs);
 		oa(player, this->current_etage);
@@ -1119,6 +1139,7 @@ int main()
 }
 void Game::ChangeInventory(Item* item) {
 	int choice = 0;
+	//стандартная отрисовка инвентаря
 	SetXY(0, 0);
 	std::cout << u8"Главные оружия";
 	if (item->item_type == MAIN_WEAPON) {
@@ -1136,16 +1157,18 @@ void Game::ChangeInventory(Item* item) {
 	std::cout << u8"Второстепенные предметы";
 	draw_frame(50, 2, &player.fs_weapon);
 	draw_frame(50, 11, &player.ss_weapon);
-	
+	//что мы получили
 	SetXY(56, 27);
 	std::cout << u8"Вы получили " << shop.GetDescription(item)<<"\n\n";
+	// строчка для того,чтобы игрок мог отказаться
 	SetXY(15, 33);
 	std::cout << u8"Нажмите ESC,чтобы отказаться от всех изменений";
 	bool HasNotChanged = false;
 	while (!HasNotChanged) {
 		if (_kbhit()) {
-			if (item->item_type == MAIN_WEAPON) {
-				if (GetAsyncKeyState(VK_UP) & 0x8000) {
+			if (item->item_type == MAIN_WEAPON) {//если предмет полученный - это основное оружие
+				if (GetAsyncKeyState(VK_UP) & 0x8000) {//стрелка вверх
+					//удаляем стрелку с предыдущего положения
 					switch (choice) {
 					case 0:
 						SetXY(30, 5);
@@ -1163,6 +1186,7 @@ void Game::ChangeInventory(Item* item) {
 					}
 					if (choice == 0) choice = 2;
 					else choice--;
+					//переставляем стрелку
 					switch (choice) {
 					case 0:
 						SetXY(30, 5);
@@ -1180,7 +1204,7 @@ void Game::ChangeInventory(Item* item) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
-				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {// стрелка вниз
 					switch (choice) {
 					case 0:
 						SetXY(30, 5);
@@ -1215,16 +1239,16 @@ void Game::ChangeInventory(Item* item) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
-				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {//клавиша Enter
 					switch (choice) {
 					case 0: {
-						MainWeapon* weapon = (dynamic_cast<MainWeapon*>(item));
+						MainWeapon* weapon = (dynamic_cast<MainWeapon*>(item));// преобразуем указатель через dynamic_cast, так как класс Item - полиморфный
 						if (weapon->type == SWORD || weapon->type == BOW) {
-							player.first_weapon = std::make_unique<Weapon>(*(static_cast<Weapon*>(weapon)));
+							player.first_weapon = std::make_unique<Weapon>(*(static_cast<Weapon*>(weapon)));//устанавливаем оружие
 
 						}
 						else {
-							player.first_weapon = std::make_unique<Shield>(*(static_cast<Shield*>(weapon)));
+							player.first_weapon = std::make_unique<Shield>(*(static_cast<Shield*>(weapon)));//устанавливаем щит
 
 						}
 
@@ -1261,14 +1285,14 @@ void Game::ChangeInventory(Item* item) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
-				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {// клавиша Escape,чтобы выйти из этого меню
 					HasNotChanged = true;
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				}
 			}
 
 			else {
-				if (GetAsyncKeyState(VK_UP) & 0x8000) {
+				if (GetAsyncKeyState(VK_UP) & 0x8000) {//стрелка вверх
 					switch (choice) {
 					case 0:
 						SetXY(77, 7);
@@ -1302,7 +1326,7 @@ void Game::ChangeInventory(Item* item) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
-				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+				else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {//стрелка вниз
 					switch (choice) {
 					case 0:
 						SetXY(77, 7);
@@ -1337,7 +1361,7 @@ void Game::ChangeInventory(Item* item) {
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 				}
 
-				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+				else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {//клавиша Enter
 					switch (choice) {
 					case 0:
 						player.fs_weapon = *(static_cast<SecondaryWeapon*>(item));
@@ -1353,7 +1377,7 @@ void Game::ChangeInventory(Item* item) {
 					SetConsoleTextAttribute(hout, (WORD)(0 << 4 | 15));
 					HasNotChanged = true;
 				}
-				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+				else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {// клавиша Esc,чтобы выйти
 					HasNotChanged = true;
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				}

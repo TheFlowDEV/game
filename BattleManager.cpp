@@ -2,10 +2,11 @@
 #include "BattleManager.h"
 #include <fstream>
 #include <sstream>
+//смотрите описание также в BattleManager.h
 BattleManager::BattleManager(Player& players):player(players) {
 }
-void BattleManager::enemy_turn() {
-	if (turn % 2 == 1) {
+void BattleManager::enemy_turn() {// ход противника
+	if (turn % 2 == 1) {//если действительно ход противника
 		player.GetDamage(enemy->UseDamage(turn) - defense_count <= 0 ? 0: enemy->UseDamage(turn) - defense_count);
 		defense_count = 0;
 		if (used_secondary) {
@@ -14,11 +15,11 @@ void BattleManager::enemy_turn() {
 			player.attack = old_attack;
 		}
 		draw_player_stats();
-		if (player.hp <= 0) {
+		if (player.hp <= 0) {//игрок умер
 			clear();
 			std::cout << u8"ИГРА ОКОНЧЕНА! КСТАТИ, ВАШИ СОХРАНЕНИЯ УДАЛЕНЫ ТОЖЕ! ХОРОШЕГО ДНЯ!";
 			std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-			remove("player.sav");
+			remove("player.sav");// удаляем сохранение
 			exit(0);
 		}
 
@@ -35,7 +36,7 @@ void BattleManager::clear_bm() {
 bool BattleManager::use_mainweapon(MainWeapon* weapon) {
 	bool defeat = false;
 	if (weapon->type == SHIELD) {
-		defense_count = reinterpret_cast<Shield*>(weapon)->Use().second;
+		defense_count = reinterpret_cast<Shield*>(weapon)->Use().second;//получаем защиту от щита
 		SetXY(0, 5);
 		std::cout << u8"Вы использовали щит. В следующем ходу будет на "<<defense_count<<u8" меньше урона";
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -44,19 +45,20 @@ bool BattleManager::use_mainweapon(MainWeapon* weapon) {
 		int old_hp = enemy->hp;
 		defeat = enemy->GetDamage(weapon->type, reinterpret_cast<Weapon*>(weapon)->Use().second+player.attack/2);
 		SetXY(0, 5);
-		std::cout << u8"Врагу нанесли " << old_hp - enemy->hp << u8" единиц урона";
+		std::cout << u8"Врагу нанесли " << old_hp - enemy->hp << u8" единиц урона";//считаем урон
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		if (defeat) {
-			if (old_attack != 0) {
+		if (defeat) {//враг побеждён?
+			if (old_attack != 0) {//возвращаем значения к старым
 				player.attack = old_attack;
 				player.dexterity = old_dexterity;
 				player.defense = old_defense;
 			}
-			player.Win();
+			player.Win();//игрок выиграл
 			return true;
 		}
 	}
 	if (!defeat) {
+		//игра продолжается
 		draw_enemy_stats();
 		turn++;
 		enemy_turn();
@@ -66,6 +68,7 @@ bool BattleManager::use_mainweapon(MainWeapon* weapon) {
 bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 	SecondaryWeapon& weapon = *(weapon_ptr);
 	bool defeat = false;
+	//использование зелий
 	switch (weapon.type) {
 	case HEAL:
 		player.hp += weapon.action_value;
@@ -130,6 +133,7 @@ bool BattleManager::use_secondary_weapon(SecondaryWeapon* weapon_ptr) {
 	}
 }
 void BattleManager::run() {
+	//побег игрока
 	if (rand() % player.dexterity==0 && enemy->type!=THEBOSS) {
 		clear();
 		std::cout << u8"Вы сбежали!";
@@ -147,6 +151,7 @@ void BattleManager::run() {
 	}
 }
 void BattleManager::InitializeUI() {
+	//отрисовка окна битвы
 	HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetXY(0, 0);
 	SetConsoleTextAttribute(hout, (WORD)(8 << 4 | 15));

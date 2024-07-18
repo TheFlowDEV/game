@@ -6,7 +6,7 @@ Enemy::Enemy(std::pair<int, int> coords, std::vector<std::vector<char>>* map, BS
     this->map = map;
     this->room = room;
 
-    this->type = boss_spawn?THEBOSS:static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));
+    this->type = boss_spawn?THEBOSS:static_cast<ENEMY_TYPES>(rand() % static_cast<int>(THEBOSS - 1));//определяем тип противника
 }
 
 std::pair<int, int> Enemy::Move(std::pair<int, int>& player_coords) {
@@ -60,7 +60,7 @@ bool Enemy::GetDamageByPotion(int damage) {
     else return false;
 }
 int Enemy::UseDamage(int turn) {
-    if (turn % 3 == 0) {
+    if (turn % 3 == 0) {//суператака
         switch (type) {
         case ICE_GOLEM:
             return rand() % 6 + 4;
@@ -82,7 +82,7 @@ int Enemy::UseDamage(int turn) {
             break;
         }
     }
-    else {
+    else {//обычная атака
         switch (type) {
         case ICE_GOLEM:
             return rand() % 5 + 4;
@@ -106,6 +106,7 @@ int Enemy::UseDamage(int turn) {
     }
 }
 bool Enemy::GetDamage(TYPES type_of_weapon,int damage) {
+    //противник получает урон в зависимости от типа оружия
     switch (type) {
     case ICE_GOLEM:
         if (type_of_weapon == SWORD) {

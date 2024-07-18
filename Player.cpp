@@ -4,21 +4,24 @@
 void Player::Move(Moves move) {
 	std::pair<int, int>& player_coords = *(this->player_coords);
 	switch (move) {
+		//движение игрока по карте
 	case UP:
-		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second - 1][player_coords.first] == '.') {
+		if (player_coords.second - 1 > 0 && mapGen->generated_map[player_coords.second - 1][player_coords.first] == '.') {//если туда двигаться можно
 
-			console_mutex.lock();
+			console_mutex.lock();// закрываем мьютекс
 			SetXY(player_coords.first, player_coords.second);
+			//переставляем игрока
 			mapGen->generated_map[player_coords.second][player_coords.first] = '.';
 			std::cout << '.';
 
 			SetXY(player_coords.first, player_coords.second - 1);
 			player_coords.second -= 1;
 			mapGen->generated_map[player_coords.second][player_coords.first] = 'P';
-			std::cout << u8"\u263A";
+			std::cout << u8"\u263A"; // выводим смайлик(обозначение игрока)
 			console_mutex.unlock();
 		}
 		else {
+			//если игрок на что-то наткнулся
 			switch (mapGen->generated_map[player_coords.second - 1][player_coords.first])
 			{
 			case '$':
@@ -37,6 +40,7 @@ void Player::Move(Moves move) {
 			}
 		}
 		break;
+	// аналогично с другими случаями ниже
 	case DOWN:
 		if (player_coords.second + 1 < mapGen->map_height && mapGen->generated_map[player_coords.second + 1][player_coords.first] == '.') {
 			console_mutex.lock();
@@ -139,6 +143,7 @@ void Player::Move(Moves move) {
 }
 
 Player::Player(std::mutex& mutexss, std::map<std::string, bool>& emit, std::map<std::string, std::pair<int, int>>& coords_emit, BattleManager& bms) :console_mutex(mutexss), emitter(emit), coords_emitter(coords_emit),bm(bms) {
+	//генерируем начальное оружие, а также все ссылочные переменные
 	first_weapon = std::make_unique<Weapon>(Weapon(SWORD, true));
 	second_weapon = std::make_unique<Weapon>(Weapon(BOW, true));
 	third_weapon = std::make_unique<Shield>(Shield(true));
@@ -150,9 +155,11 @@ void Player::UpdateMap(Map* map_ptr, std::pair<int, int>* coords) {
 }
 
 void Player::HandleKeyboardEvents() {
+	//параметр ready отвечает за то,готов ли игрок взаимодействовать с игрой
+	//он будет равен false, до тех пор пока игра всё не отрисует
 	if (ready) {
-		if (canMove) {
-			if (shouldntStop()) {
+		if (canMove) {//ветка для движения
+			if (shouldntStop()) {// shouldntStop проверяет скорость движения игрока
 				std::pair<int, int>& player_coords = *(this->player_coords);
 
 				if (GetAsyncKeyState(VK_UP) & 0x8000) { // стрелка вверх
@@ -194,9 +201,9 @@ void Player::HandleKeyboardEvents() {
 			}
 
 		}
-		else if (battlemode) {
+		else if (battlemode) {//режим битвы
 			if (GetAsyncKeyState(VK_UP) & 0x8000) { // стрелка вверх
-				if (bm.menu==MAIN) {
+				if (bm.menu==MAIN) {//главное меню битвы
 					HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 					switch (bm.choice) {
 					case 0:
@@ -236,7 +243,7 @@ void Player::HandleKeyboardEvents() {
 						break;
 					}
 				}
-				else if (bm.menu==SECONDARYWEAPON){
+				else if (bm.menu==SECONDARYWEAPON){//меню зелий
 					HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 					switch (bm.choice) {
 					case 0:
@@ -275,7 +282,7 @@ void Player::HandleKeyboardEvents() {
 						break;
 					}
 				}
-				else {
+				else {//меню главного оружия
 					HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 					switch (bm.choice) {
 					case 0:
@@ -447,6 +454,8 @@ void Player::HandleKeyboardEvents() {
 			else if (GetAsyncKeyState(VK_RETURN) & 0x8000) { // ENTER
 				if (bm.menu == MAIN) {
 					switch (bm.choice) {
+						//переводим игрока в соответсвующие меню(если он выбрал оружия)
+						//или пробуем сбежать
 					case 0: {
 						bm.menu = MAINWEAPON;
 						clear();
@@ -475,7 +484,7 @@ void Player::HandleKeyboardEvents() {
 						break;
 					}
 					case 2:
-						bm.run();
+						bm.run();//побег
 						break;
 					}
 
@@ -483,9 +492,9 @@ void Player::HandleKeyboardEvents() {
 				else if (bm.menu == MAINWEAPON) {
 					switch (bm.choice) {
 					case 0:
-						if (first_weapon->isDefined) {
+						if (first_weapon->isDefined) {//если оружие определено
 							bool win = bm.use_mainweapon(first_weapon.get());
-							if (!win) {
+							if (!win) {//если не победа,отрисовываем всё заново
 								bm.menu = MAIN;
 								bm.choice = 0;
 								clear();
@@ -558,22 +567,23 @@ void Player::HandleKeyboardEvents() {
 	}
 }
 bool Player::shouldntStop() {
-	auto now = std::chrono::steady_clock::now();
-	std::chrono::duration<float> elapsed = now - last_move_time;
-	if (elapsed.count() >= move_interval) {
+	auto now = std::chrono::steady_clock::now();// время сейчас
+	std::chrono::duration<float> elapsed = now - last_move_time;// время прошедшее с последнего движения
+	if (elapsed.count() >= move_interval) {// если время больше или равно интервалу движения
 		last_move_time = now;
-		return true;
+		return true;//игрок может двигаться
 	}
-	return false;
+	return false;//иначе нет
 }
 void Player::LevelUp() {
+	//рандомно прибавляем к характеристикам повышение
 	dexterity += rand() % 2 + 1;
 	attack += rand() % 4 + 1;
 	defense += rand() % 3 + 1;
 }
 
 bool Player::EnemyNearThePlayer() {
-	//что вблизи игрока
+	//смотрим противника вблизи игрока
 	int x = this->player_coords->first;
 	int y = this->player_coords->second;
 	std::vector<std::vector<char>> map = this->mapGen->generated_map;
@@ -585,10 +595,13 @@ bool Player::EnemyNearThePlayer() {
 	
 }
 void Player::GetDamage(int damage) {
+	//условие на уклонение
 	if (!(rand() % ((11 - dexterity)==0?1:11-dexterity) == 0)) {
+		//игрок уклонился и получает урон(также учитывается параметр ЗАЩИТА у игрока)
 		this->hp -= (damage-this->defense)<0?0:damage - this->defense;
 	}
 	else {
+		// игрок увернулся
 		SetXY(0, 5);
 		std::cout << u8"Вы, совершив нереальный пируэт увернулись, от атаки противника. Противник в шоке";
 		std::this_thread::sleep_for(std::chrono::milliseconds(1500));
@@ -599,6 +612,7 @@ void Player::GetDamage(int damage) {
 
 }
 void Player::reinitialize() {
+	//сброс всех параметров
 	first_weapon = std::make_unique<Weapon>(Weapon(SWORD, true));
 	second_weapon = std::make_unique<Weapon>(Weapon(BOW, true));
 	third_weapon = std::make_unique<Shield>(Shield(true));
@@ -614,6 +628,7 @@ void Player::reinitialize() {
 
 }
 void Player::Win() {
+	//игрок победил в битве и получает награду
 	bm.choice = 0;
 	ready = false;
 	clear();
@@ -639,6 +654,7 @@ void Player::Win() {
 
 }
 void Player::run_from_battle() {
+	//игрок убежал с битвы
 	bm.choice = 0;
 	ready = false;
 	emitter["battle_end"] = true;
@@ -646,6 +662,7 @@ void Player::run_from_battle() {
 }
 std::string Player::GetWeaponDescription(MainWeapon* weapon)
 {
+	//получаем описание ОСНОВНОГО оружия
 	std::stringstream fw_description;
 	if (weapon->isDefined) {
 		switch (weapon->type) {
@@ -667,6 +684,7 @@ std::string Player::GetWeaponDescription(MainWeapon* weapon)
 	}
 }
 std::string Player::GetWeaponDescription(SecondaryWeapon* weapon) {
+	//получаем описание ЗЕЛЬЯ
 	std::stringstream fw_description;
 	if (weapon->AreYouExist()) {
 		switch (weapon->type) {
